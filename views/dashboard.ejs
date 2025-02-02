@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Welcome, <%= user.name %> (<%= user.role %>)</h2>
+        <a href="/files/upload">Upload File</a>
+        <a href="/users/logout">Logout</a>
+        
+        <h3>Recent Uploads</h3>
+        <ul class="file-list">
+            <% files.forEach(file => { %>
+                <li>
+                    <a href="/uploads/<%= file.file %>"><%= file.title %></a>
+                    <p><%= file.description %></p>
+                    <small>Uploaded by: <%= file.uploadedBy.name %></small>
+                </li>
+            <% }) %>
+        </ul>
+    </div>
+</body>
+</html>
