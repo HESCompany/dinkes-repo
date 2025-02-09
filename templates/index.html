@@ -52,16 +52,12 @@
             </div>
             <div class="col-md-12">
                 <label class="form-label">Tag</label>
-                <div class="d-flex flex-wrap gap-2">
+                <select class="form-select" name="tags">
+                    <option value="">Pilih Tag</option>
                     {% for tag in ["Tesis", "Disertasi", "Laporan Penelitian", "Jurnal", "Makalah", "Proposal"] %}
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="tags" value="{{ tag }}" id="tag_{{ tag }}" {% if tag in query_params.tags %}checked{% endif %}>
-                        <label class="form-check-label" for="tag_{{ tag }}">
-                            {{ tag }}
-                        </label>
-                    </div>
+                    <option value="{{ tag }}" {% if tag in query_params.tags %}selected{% endif %}>{{ tag }}</option>
                     {% endfor %}
-                </div>
+                </select>
             </div>
             <div class="col-12">
                 <button type="submit" class="btn btn-success">Cari</button>
@@ -153,7 +149,6 @@
 </nav>
 
 <!-- Upload File Modal -->
-
 <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -188,20 +183,15 @@
                         <input type="text" class="form-control" id="major" name="major" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Tag</label>
-                        <div class="d-flex flex-wrap gap-2">
+                        <label for="tags" class="form-label">Tag</label>
+                        <select class="form-select" id="tags" name="tags" required>
+                            <option value="">Pilih Tag</option>
                             {% for tag in ["Tesis", "Disertasi", "Laporan Penelitian", "Jurnal", "Makalah", "Proposal"] %}
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="tags" value="{{ tag }}" id="upload_tag_{{ tag }}">
-                                <label class="form-check-label" for="upload_tag_{{ tag }}">
-                                    {{ tag }}
-                                </label>
-                            </div>
+                            <option value="{{ tag }}">{{ tag }}</option>
                             {% endfor %}
-                        </div>
+                        </select>
                     </div>
                     <button type="submit" class="btn btn-primary">Unggah</button>
-                    <!-- ... (other form fields remain the same) -->
                 </form>
             </div>
         </div>
@@ -249,7 +239,7 @@ function loadFileDetails(fileId) {
             document.getElementById('modal-nim').innerText = file.nim || 'N/A';
             document.getElementById('modal-university-name').innerText = file.university_name || 'N/A';
             document.getElementById('modal-major').innerText = file.major || 'N/A';
-            document.getElementById('modal-tags').innerText = file.tags ? file.tags.replace(',', ', ') : 'Tidak ada tag';
+            document.getElementById('modal-tags').innerText = file.tags || 'Tidak ada tag';
             document.getElementById('modal-file-type').innerText = file.file_type || 'Tidak diketahui';
             document.getElementById('modal-file-size').innerText = (file.file_size / 1024).toFixed(2);
             document.getElementById('modal-uploader').innerText = file.uploader_username || 'Tidak diketahui';
@@ -282,6 +272,7 @@ function loadFileDetails(fileId) {
         });
 }
 
+// Add sorting functionality
 document.addEventListener('DOMContentLoaded', function() {
     const table = document.getElementById('fileTable');
     const headers = table.querySelectorAll('th.sortable');
@@ -315,7 +306,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-
 </script>
 {% endblock %}
-
