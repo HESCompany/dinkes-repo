@@ -353,7 +353,7 @@ def register():
         password = request.form.get('password')
         secret_key = request.form.get('secret_key')
 
-        if secret_key != "Kesehatan79":
+        if secret_key != os.getenv('REGISTRATION_SECRET_KEY'):
             flash('Registrasi gagal: Kunci rahasia tidak valid.', 'danger')
             return render_template('register.html')
 
