@@ -45,7 +45,7 @@ pymysql.install_as_MySQLdb()
 # File upload configuration
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app.config['UPLOAD_FOLDER'] = os.path.join(BASE_DIR, 'uploads')
-app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50 MB
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5 MB
 
 # Ensure upload folder exists
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
@@ -194,55 +194,62 @@ def file_details(file_id):
 @login_required
 def upload_file():
     try:
-        if 'file' not in request.files:
-            flash('Tidak ada bagian file', 'danger')
+        if 'files' not in request.files:
+            flash('No file part', 'danger')
             return redirect(request.url)
-        file = request.files['file']
-        if file.filename == '':
-            flash('Tidak ada file yang dipilih', 'danger')
+        
+        files = request.files.getlist('files')
+        
+        if not files or files[0].filename == '':
+            flash('No selected file', 'danger')
             return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = str(datetime.now().timestamp()) + '_' + file.filename
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            logger.debug(f"Menyimpan file ke: {file_path}")
-            file.save(file_path)
-
-            nama_penulis = request.form.get('nama_penulis')
-            nim = request.form.get('nim')
-            judul = request.form.get('judul')
-            university_name = request.form.get('university_name')
-            major = request.form.get('major')
-            tags = request.form.getlist('tags')
-            
-            # Validate tags
-            valid_tags = [tag for tag in tags if tag in ALLOWED_TAGS]
-            tags_string = ','.join(valid_tags)
-
-            new_file = File(
-                filename=filename,
-                original_filename=file.filename,
-                file_type=file.filename.split('.')[-1].lower(),
-                user_id=current_user.id,
-                file_size=os.path.getsize(file_path),
-                upload_date=datetime.now(pytz.utc),
-                nama_penulis=nama_penulis,
-                nim=nim,
-                judul=judul,
-                university_name=university_name,
-                major=major,
-                tags=tags_string
-            )
-
-            db.session.add(new_file)
+        
+        uploaded_files = []
+        
+        for file in files:
+            if file and allowed_file(file.filename):
+                filename = str(datetime.now().timestamp()) + '_' + file.filename
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(file_path)
+                
+                nama_penulis = request.form.get('nama_penulis')
+                nim = request.form.get('nim')
+                judul = request.form.get('judul')
+                university_name = request.form.get('university_name')
+                major = request.form.get('major')
+                tags = request.form.getlist('tags')
+                
+                valid_tags = [tag for tag in tags if tag in ALLOWED_TAGS]
+                tags_string = ','.join(valid_tags)
+                
+                new_file = File(
+                    filename=filename,
+                    original_filename=file.filename,
+                    file_type=file.filename.split('.')[-1].lower(),
+                    user_id=current_user.id,
+                    file_size=os.path.getsize(file_path),
+                    upload_date=datetime.now(pytz.utc),
+                    nama_penulis=nama_penulis,
+                    nim=nim,
+                    judul=judul,
+                    university_name=university_name,
+                    major=major,
+                    tags=tags_string
+                )
+                
+                db.session.add(new_file)
+                uploaded_files.append(new_file)
+        
+        if uploaded_files:
             db.session.commit()
-            flash('File berhasil diunggah', 'success')
-            return redirect(url_for('index'))
+            flash(f'{len(uploaded_files)} file(s) successfully uploaded', 'success')
         else:
-            flash('Tipe file tidak valid. Tipe yang diizinkan: pdf, jpg, jpeg, png.', 'danger')
-            return redirect(request.url)
+            flash('No valid files were uploaded', 'warning')
+        
+        return redirect(url_for('index'))
     except Exception as e:
         logger.error(f"Error during file upload: {str(e)}")
-        flash('Terjadi kesalahan saat mengunggah file.', 'danger')
+        flash('An error occurred while uploading the file(s).', 'danger')
         return redirect(url_for('index'))
 
 @app.route('/preview/<int:file_id>')
@@ -382,4 +389,3 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     app.run(debug=True)
-

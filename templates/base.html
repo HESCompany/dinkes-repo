@@ -19,6 +19,24 @@
         body {
             padding-top: 70px; /* Adjust based on navbar height */
         }
+
+        .sortable {
+            cursor: pointer;
+        }
+        .sortable::after {
+            content: '\25B2';
+            margin-left: 5px;
+            opacity: 0.5;
+        }
+        .sortable.asc::after {
+            content: '\25B2';
+            opacity: 1;
+        }
+        .sortable.desc::after {
+            content: '\25BC';
+            opacity: 1;
+        }
+        
     </style>
 </head>
 <body>

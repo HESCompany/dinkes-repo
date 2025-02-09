@@ -70,16 +70,16 @@
     </form>
 </div>
 <div class="table-responsive">
-    <table class="table table-striped">
+    <table class="table table-striped" id="fileTable">
         <thead>
             <tr>
-                <th>Tanggal Unggah</th>
-                <th>Nama Penulis</th>
-                <th>NIM</th>
-                <th>Universitas</th>
-                <th>Prodi</th>
-                <th>Judul</th>
-                <th>Tag</th>
+                <th class="sortable" data-sort="upload_date">Tanggal Unggah</th>
+                <th class="sortable" data-sort="nama_penulis">Nama Penulis</th>
+                <th class="sortable" data-sort="nim">NIM</th>
+                <th class="sortable" data-sort="university_name">Universitas</th>
+                <th class="sortable" data-sort="major">Prodi</th>
+                <th class="sortable" data-sort="judul">Judul</th>
+                <th class="sortable" data-sort="tags">Tag</th>
                 <th>Aksi</th>
             </tr>
         </thead>
@@ -153,6 +153,7 @@
 </nav>
 
 <!-- Upload File Modal -->
+
 <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -163,8 +164,8 @@
             <div class="modal-body">
                 <form action="{{ url_for('upload_file') }}" method="POST" enctype="multipart/form-data">
                     <div class="mb-3">
-                        <label for="file" class="form-label">File (PDF, JPG, JPEG, PNG saja)</label>
-                        <input type="file" class="form-control" id="file" name="file" required accept=".pdf,.jpg,.jpeg,.png">
+                        <label for="files" class="form-label">File (PDF, JPG, JPEG, PNG saja, max 5MB per file)</label>
+                        <input type="file" class="form-control" id="files" name="files" required accept=".pdf,.jpg,.jpeg,.png" multiple>
                     </div>
                     <div class="mb-3">
                         <label for="judul" class="form-label">Judul</label>
@@ -200,6 +201,7 @@
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Unggah</button>
+                    <!-- ... (other form fields remain the same) -->
                 </form>
             </div>
         </div>
@@ -279,6 +281,41 @@ function loadFileDetails(fileId) {
             alert('Terjadi kesalahan saat memuat detail file.');
         });
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const table = document.getElementById('fileTable');
+    const headers = table.querySelectorAll('th.sortable');
+    
+    headers.forEach(header => {
+        header.addEventListener('click', () => {
+            const column = header.dataset.sort;
+            const order = header.classList.contains('asc') ? 'desc' : 'asc';
+            
+            // Remove sorting classes from all headers
+            headers.forEach(h => h.classList.remove('asc', 'desc'));
+            
+            // Add sorting class to the clicked header
+            header.classList.add(order);
+            
+            // Sort the table
+            const rows = Array.from(table.querySelectorAll('tbody tr'));
+            rows.sort((a, b) => {
+                const aValue = a.querySelector(`td:nth-child(${Array.from(headers).indexOf(header) + 1})`).textContent;
+                const bValue = b.querySelector(`td:nth-child(${Array.from(headers).indexOf(header) + 1})`).textContent;
+                
+                if (order === 'asc') {
+                    return aValue.localeCompare(bValue);
+                } else {
+                    return bValue.localeCompare(aValue);
+                }
+            });
+            
+            // Reorder the rows in the table
+            rows.forEach(row => table.querySelector('tbody').appendChild(row));
+        });
+    });
+});
+
 </script>
 {% endblock %}
 
