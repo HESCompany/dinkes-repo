@@ -18,18 +18,23 @@ load_dotenv()
 # Initialize Flask app
 app = Flask(__name__)
 
-# Load configuration from .env
-app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
-DB_USERNAME = os.getenv('DB_USERNAME')
-DB_PASSWORD = urllib.parse.quote_plus(os.getenv('DB_PASSWORD'))
-DB_HOST = os.getenv('DB_HOST')
-DB_NAME = os.getenv('DB_NAME')
+# Configuration
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'djfkla83747fdjk')
 
-# SQLAlchemy database URI
-if DB_PASSWORD:
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
+# Database Configuration
+# First try Railway's private network MySQL URL
+RAILWAY_MYSQL_URL = os.getenv('MYSQL_URL')
+if RAILWAY_MYSQL_URL:
+    # Replace mysql:// with mysql+pymysql:// for SQLAlchemy
+    app.config['SQLALCHEMY_DATABASE_URI'] = RAILWAY_MYSQL_URL.replace("mysql://", "mysql+pymysql://", 1)
 else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{DB_USERNAME}@{DB_HOST}/{DB_NAME}'
+    # Fallback to individual connection parameters
+    DB_USERNAME = os.getenv('MYSQLUSER', 'root')
+    DB_PASSWORD = urllib.parse.quote_plus(os.getenv('MYSQLPASSWORD', 'Hesc0$_@134139'))
+    DB_HOST = os.getenv('MYSQLHOST', '127.0.0.1')
+    DB_PORT = os.getenv('MYSQLPORT', '3306')
+    DB_NAME = os.getenv('MYSQLDATABASE', 'file_repository')
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 
 print(f"Connecting to database: {app.config['SQLALCHEMY_DATABASE_URI']}")
 
@@ -39,8 +44,8 @@ pymysql.install_as_MySQLdb()
 
 # File upload configuration
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_FOLDER', os.path.join(BASE_DIR, 'uploads'))
-app.config['MAX_CONTENT_LENGTH'] = int(os.getenv('MAX_CONTENT_LENGTH', 50 * 1024 * 1024))  # 50 MB
+app.config['UPLOAD_FOLDER'] = os.path.join(BASE_DIR, 'uploads')
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50 MB
 
 # Ensure upload folder exists
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
@@ -208,7 +213,7 @@ def upload_file():
             university_name = request.form.get('university_name')
             major = request.form.get('major')
             tags = request.form.getlist('tags')
-
+            
             # Validate tags
             valid_tags = [tag for tag in tags if tag in ALLOWED_TAGS]
             tags_string = ','.join(valid_tags)
@@ -347,7 +352,8 @@ def register():
         username = request.form.get('username')
         password = request.form.get('password')
         secret_key = request.form.get('secret_key')
-        if secret_key != os.getenv('REGISTRATION_SECRET_KEY'):
+
+        if secret_key != "Kesehatan79":
             flash('Registrasi gagal: Kunci rahasia tidak valid.', 'danger')
             return render_template('register.html')
 
@@ -375,5 +381,5 @@ def logout():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True, port=5010)
+    app.run(debug=True)
 

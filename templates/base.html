@@ -33,11 +33,11 @@
                 <ul class="navbar-nav ms-auto">
                     {% if current_user.is_authenticated %}
                         <li class="nav-item">
-                            <span class="nav-link">Selamat datang, {{ current_user.username }}!</span>
+                            <span class="nav-link">Hello, {{ current_user.username }}!</span>
                         </li>
                         <li class="nav-item">
                             <button type="button" class="btn btn-light me-2" data-bs-toggle="modal" data-bs-target="#uploadModal">
-                                Unggah File
+                                Upload File
                             </button>
                         </li>
                         <li class="nav-item">
