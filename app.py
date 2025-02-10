@@ -75,18 +75,20 @@ def allowed_file(filename):
 
 # Database Models
 class User(UserMixin, db.Model):
+    __tablename__ = 'User'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
     files = db.relationship('File', backref='uploader', lazy=True)
 
 class File(db.Model):
+    __tablename__ = 'File'
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(200), nullable=False)
     original_filename = db.Column(db.String(200), nullable=False)
     file_type = db.Column(db.String(50))
     upload_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
     file_size = db.Column(db.Integer)
     nama_penulis = db.Column(db.String(200))
     nim = db.Column(db.String(50))
@@ -217,10 +219,7 @@ def upload_file():
                 judul = request.form.get('judul')
                 university_name = request.form.get('university_name')
                 major = request.form.get('major')
-                tags = request.form.getlist('tags')
-                
-                valid_tags = [tag for tag in tags if tag in ALLOWED_TAGS]
-                tags_string = ','.join(valid_tags)
+                tags = request.form.get('tags')
                 
                 new_file = File(
                     filename=filename,
@@ -234,7 +233,7 @@ def upload_file():
                     judul=judul,
                     university_name=university_name,
                     major=major,
-                    tags=tags_string
+                    tags=tags
                 )
                 
                 db.session.add(new_file)
