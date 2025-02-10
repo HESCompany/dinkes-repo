@@ -1,6 +1,7 @@
 <!-- templates/base.html -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,61 +15,69 @@
             top: 0;
             width: 100%;
             z-index: 1000;
-            background-color: #0d6efd; /* Blue color */
+            background-color: #0d6efd;
+            /* Blue color */
         }
+
         /* Offset content below the fixed navbar */
         body {
-            padding-top: 70px; /* Adjust based on navbar height */
+            padding-top: 70px;
+            /* Adjust based on navbar height */
         }
 
         .sortable {
             cursor: pointer;
         }
+
         .sortable::after {
             content: '\25B2';
             margin-left: 5px;
             opacity: 0.5;
         }
+
         .sortable.asc::after {
             content: '\25B2';
             opacity: 1;
         }
+
         .sortable.desc::after {
             content: '\25BC';
             opacity: 1;
         }
-        
     </style>
 </head>
+
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ url_for('index') }}">File Repository</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     {% if current_user.is_authenticated %}
-                        <li class="nav-item">
-                            <span class="nav-link">Hello, {{ current_user.username }}!</span>
-                        </li>
-                        <li class="nav-item">
-                            <button type="button" class="btn btn-light me-2" data-bs-toggle="modal" data-bs-target="#uploadModal">
-                                Upload File
-                            </button>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ url_for('logout') }}" class="btn btn-outline-light">Logout</a>
-                        </li>
+                    <li class="nav-item">
+                        <span class="nav-link">Hello, {{ current_user.username }}!</span>
+                    </li>
+                    <li class="nav-item">
+                        <button type="button" class="btn btn-light me-2" data-bs-toggle="modal"
+                            data-bs-target="#uploadModal">
+                            Upload File
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('logout') }}" class="btn btn-outline-light">Logout</a>
+                    </li>
                     {% else %}
-                        <li class="nav-item">
-                            <a href="{{ url_for('login') }}" class="btn btn-outline-light me-2">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ url_for('register') }}" class="btn btn-outline-light">Register</a>
-                        </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-light me-2">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('register') }}" class="btn btn-outline-light">Register</a>
+                    </li>
                     {% endif %}
                 </ul>
             </div>
@@ -78,14 +87,14 @@
     <!-- Flash Messages -->
     <div class="container mt-4">
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
         {% endwith %}
     </div>
 
@@ -102,11 +111,19 @@
                     <h5 class="modal-title" id="uploadModalLabel">Upload File</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                <!-- ... (previous content remains the same) -->
                 <div class="modal-body">
                     <form method="POST" action="{{ url_for('upload_file') }}" enctype="multipart/form-data">
                         <div class="mb-3">
+                            <label for="files" class="form-label">File (PDF, JPG, JPEG, PNG saja, max 5MB per
+                                file)</label>
+                            <input type="file" class="form-control" id="files" name="files"
+                                accept=".pdf,.jpg,.jpeg,.png" multiple required>
+                        </div>
+                        <div class="mb-3">
                             <label for="file" class="form-label">File</label>
-                            <input type="file" class="form-control" id="file" name="file" accept=".pdf,.jpg,.jpeg,.png,.gif" required>
+                            <input type="file" class="form-control" id="file" name="file"
+                                accept=".pdf,.jpg,.jpeg,.png,.gif" required>
                         </div>
                         <div class="mb-3">
                             <label for="judul" class="form-label">Judul</label>
@@ -118,7 +135,8 @@
                         </div>
                         <div class="mb-3">
                             <label for="university_name" class="form-label">University Name</label>
-                            <input type="text" class="form-control" id="university_name" name="university_name" required>
+                            <input type="text" class="form-control" id="university_name" name="university_name"
+                                required>
                         </div>
                         <div class="mb-3">
                             <label for="major" class="form-label">Major</label>
@@ -126,18 +144,18 @@
                         </div>
                         <div class="mb-3">
                             <label for="tags" class="form-label">Tags</label>
-                            <select class="form-select" id="tags" name="tags" multiple required>
-                                <option value="Tesis">Tesis</option>
-                                <option value="Disertasi">Disertasi</option>
-                                <option value="Laporan Penelitian">Laporan Penelitian</option>
-                                <option value="Jurnal">Jurnal</option>
-                                <option value="Makalah">Makalah</option>
-                                <option value="Proposal">Proposal</option>
+                            <select class="form-select" id="tags" name="tags" required>
+                                <option value="">Pilih Tag</option>
+                                {% for tag in ["Tesis", "Disertasi", "Laporan Penelitian", "Jurnal", "Makalah",
+                                "Proposal"] %}
+                                <option value="{{ tag }}">{{ tag }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <button type="submit" class="btn btn-primary">Upload</button>
                     </form>
                 </div>
+                <!-- ... (rest of the content remains the same) -->
             </div>
         </div>
     </div>
@@ -145,5 +163,5 @@
     <!-- Bootstrap JS and dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
 
+</html>
