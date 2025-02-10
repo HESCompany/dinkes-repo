@@ -8,6 +8,14 @@ from app.utils import allowed_file, save_file
 import os
 from datetime import datetime
 import pytz
+from flask import current_app
+from flask_migrate import upgrade
+
+@bp.route('/init-db')
+def init_db():
+    with current_app.app_context():
+        upgrade()
+    return "Database initialized successfully"
 
 @bp.route('/')
 def index():
