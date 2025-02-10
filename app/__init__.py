@@ -3,6 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from config import Config
+import pymysql
+
+pymysql.install_as_MySQLdb()
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -28,3 +31,4 @@ def create_app(config_class=Config):
     return app
 
 from app import models
+
