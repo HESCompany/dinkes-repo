@@ -1,11 +1,9 @@
 Flask==2.3.2
 Flask-SQLAlchemy==3.0.3
 Flask-Login==0.6.2
-Flask-WTF==1.1.1
+Flask-Migrate==4.0.4
 Werkzeug==2.3.4
-pytz==2023.3
+pymysql==1.1.0
 python-dotenv==1.0.0
-gunicorn==20.1.0
-pymysql==1.0.3
 cryptography==41.0.1
-
+gunicorn==20.1.0

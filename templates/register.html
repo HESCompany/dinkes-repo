@@ -1,51 +1,40 @@
 {% extends "base.html" %}
+
 {% block title %}Register - File Repository{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <h1 class="mb-4">Register</h1>
-        <form method="POST" class="mb-4">
-            <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" class="form-control" id="username" name="username" required>
+<div class="w-full max-w-md mx-auto bg-white dark:bg-gray-800 shadow-md rounded-lg">
+    <div class="p-6">
+        <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-gray-100 mb-6">Register</h2>
+        <form method="POST" class="space-y-4">
+            <div class="space-y-2">
+                <label for="username" class="text-sm font-medium text-gray-700 dark:text-gray-300">Username</label>
+                <input id="username" name="username" type="text" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
             </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <div class="input-group">
-                    <input type="password" class="form-control" id="password" name="password" required>
-                    <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('password')">
-                        <i class="bi bi-eye"></i>
-                    </button>
-                </div>
-                <small class="form-text text-muted">
+            <div class="space-y-2">
+                <label for="password" class="text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+                <input id="password" name="password" type="password" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                <p class="text-xs text-gray-500 dark:text-gray-400">
                     Password must be at least 8 characters long and include both letters and numbers.
-                </small>
+                </p>
             </div>
-            <div class="mb-3">
-                <label for="secret_key" class="form-label">Secret Key</label>
-                <input type="text" class="form-control" id="secret_key" name="secret_key" required>
-                <small class="form-text text-muted">
+            <div class="space-y-2">
+                <label for="secret_key" class="text-sm font-medium text-gray-700 dark:text-gray-300">Secret Key</label>
+                <input id="secret_key" name="secret_key" type="text" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                <p class="text-xs text-gray-500 dark:text-gray-400">
                     Please enter the secret key provided to you.
-                </small>
+                </p>
             </div>
-            <button type="submit" class="btn btn-primary">Register</button>
+            <button type="submit" class="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                Register
+            </button>
         </form>
-        <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a>.</p>
+        <p class="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
+            Already have an account? 
+            <a href="{{ url_for('login') }}" class="font-medium text-blue-600 hover:underline dark:text-blue-400">
+                Login here
+            </a>.
+        </p>
     </div>
 </div>
-
-<script>
-    function togglePasswordVisibility(inputId) {
-        const input = document.getElementById(inputId);
-        const button = input.nextElementSibling;
-        if (input.type === "password") {
-            input.type = "text";
-            button.innerHTML = '<i class="bi bi-eye-slash"></i>';
-        } else {
-            input.type = "password";
-            button.innerHTML = '<i class="bi bi-eye"></i>';
-        }
-    }
-</script>
 {% endblock %}
-
