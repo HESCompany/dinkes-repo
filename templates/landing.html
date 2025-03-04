@@ -1,0 +1,612 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to File Repository{% endblock %}
+
+{% block content %}
+<div class="flex flex-col items-center justify-center min-h-[80vh] py-20 px-4 bg-white dark:bg-gray-900">
+    <div class="max-w-4xl w-full text-center space-y-10">
+        <!-- Title with two-tone styling -->
+        <div class="space-y-4">
+            <h1 class="text-6xl font-bold text-gray-900 dark:text-white">
+                E-Repositori
+            </h1>
+            <h2 class="text-5xl font-bold text-blue-600 dark:text-blue-400">
+                Dinas Kesehatan Kota Semarang
+            </h2>
+        </div>
+        
+        <!-- Description text -->
+        <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
+            Platform untuk menyimpan, mengelola, dan mengeksplorasi file di Dinas Kesehatan Kota Semarang.
+        </p>
+        
+        <!-- Call to action button -->
+        <div class="mt-12">
+            <a href="{{ url_for('repository') }}"
+                class="px-10 py-4 bg-blue-600 text-white rounded-lg text-xl font-medium hover:bg-blue-700 transition shadow-lg hover:shadow-xl">
+                Jelajahi Repositori
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Analytics Dashboard Section -->
+<div class="bg-gray-50 dark:bg-gray-900 py-10 px-4 rounded-xl shadow-md mb-12">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">Dashboard Analitik</h2>
+    
+    
+    <!-- New Uploads and Top Downloads -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+        <!-- New Uploads -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m4-4v12" />
+                </svg>
+                Dokumen Terbaru
+            </h3>
+            
+            <ul id="new_files_list" class="space-y-2 max-h-60 overflow-y-auto">
+                <li class="p-2 bg-gray-50 dark:bg-gray-700 rounded flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span>Loading...</span>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Top Downloads -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Top Downloads
+            </h3>
+            
+            <ul id="top_files_list" class="space-y-2 max-h-60 overflow-y-auto">
+                <li class="p-2 bg-gray-50 dark:bg-gray-700 rounded flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span>Loading...</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- Charts Section -->
+    <div class="space-y-10">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white text-center mb-6">Statistik Pengguna & Dokumen</h2>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white text-center mb-4">Dokumen Berdasarkan Jenis</h3>
+                <div class="h-64">
+                    <canvas id="filesChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white text-center mb-4">Dokumen Berdasarkan Kategori</h3>
+                <div class="h-64">
+                    <canvas id="tagsChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Trend Data Selector and Chart -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white text-center">Trend Dokumen</h3>
+                <!-- Period Selector: Choose between 1 Tahun (year) and 1 Bulan (month) -->
+                <div class="flex items-center">
+                    <label for="trendPeriod" class="mr-2 text-gray-700 dark:text-gray-300">Tampilkan:</label>
+                    <select id="trendPeriod" class="rounded border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                        <option value="year" selected>1 Tahun</option>
+                        <option value="month">1 Bulan</option>
+                    </select>
+                </div>
+            </div>
+            <div class="h-64">
+                <canvas id="trendsChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js and Data Fetching -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Define color palette for consistency
+    const colorPalette = {
+        blue: 'rgb(59, 130, 246)',
+        red: 'rgb(239, 68, 68)',
+        green: 'rgb(16, 185, 129)',
+        purple: 'rgb(139, 92, 246)',
+        amber: 'rgb(245, 158, 11)',
+        orange: 'rgb(249, 115, 22)',
+        teal: 'rgb(20, 184, 166)',
+        cyan: 'rgb(6, 182, 212)',
+        pink: 'rgb(236, 72, 153)',
+        indigo: 'rgb(99, 102, 241)'
+    };
+
+    // Generate a color array from our palette
+    function generateColors(count) {
+        const colorKeys = Object.keys(colorPalette);
+        return Array.from({length: count}, (_, i) => colorPalette[colorKeys[i % colorKeys.length]]);
+    }
+
+    // Generate a gradient for line charts
+    function createGradient(ctx, color) {
+        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient.addColorStop(0, color);
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        return gradient;
+    }
+    
+    // Function to format YYYY-MM to readable month (e.g., "Jan 2024")
+    function formatMonthLabel(yearMonth) {
+        if (!yearMonth || yearMonth.length < 7) return yearMonth;
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const [year, month] = yearMonth.split('-');
+        const monthIndex = parseInt(month) - 1;
+        return (monthIndex >= 0 && monthIndex < 12) ? `${monthNames[monthIndex]} ${year}` : yearMonth;
+    }
+
+    // Chart options for better appearance
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    padding: 20,
+                    boxWidth: 15,
+                    usePointStyle: true,
+                    pointStyle: 'circle'
+                }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                padding: 12,
+                titleColor: '#fff',
+                bodyColor: '#fff',
+                bodySpacing: 8,
+                cornerRadius: 6,
+                boxPadding: 6
+            }
+        }
+    };
+
+    // Function to fetch trend data with error handling
+    function fetchTrendData() {
+        const period = document.getElementById('trendPeriod').value || 'year';
+        return fetch("{{ url_for('trend_data') }}?period=" + period)
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                console.log("Trend Data:", data);
+                return data;
+            })
+            .catch(error => {
+                console.error("Error fetching trend data:", error);
+                return { labels: [], uploads: [], downloads: [] };
+            });
+    }
+
+    // Function to create trend chart
+    function createTrendChart(data) {
+    const trendsCanvas = document.getElementById("trendsChart");
+    if (!trendsCanvas) {
+        console.error("Trends chart canvas not found");
+        return;
+    }
+    
+    const ctx = trendsCanvas.getContext("2d");
+    if (!ctx) {
+        console.error("Could not get 2D context for trends chart");
+        return;
+    }
+    
+    // Create gradient backgrounds
+    const uploadGradient = ctx.createLinearGradient(0, 0, 0, 400);
+    uploadGradient.addColorStop(0, 'rgba(59, 130, 246, 0.5)');
+    uploadGradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
+    
+    const downloadGradient = ctx.createLinearGradient(0, 0, 0, 400);
+    downloadGradient.addColorStop(0, 'rgba(16, 185, 129, 0.5)');
+    downloadGradient.addColorStop(1, 'rgba(16, 185, 129, 0)');
+
+    // Check the selected period
+    const period = document.getElementById('trendPeriod').value || 'year';
+    let formattedLabels = [];
+    
+    if (period === 'month') {
+        // For daily view in month period, format labels as "DD MMM" (e.g., "15 Jul")
+        formattedLabels = data.labels.map(label => {
+            try {
+                const dateObj = new Date(label);
+                if (isNaN(dateObj.getTime())) {
+                    console.error("Invalid date:", label);
+                    return label;
+                }
+                // Format as "DD MMM" (e.g., "15 Jul")
+                return dateObj.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+            } catch (error) {
+                console.error("Error formatting date:", error);
+                return label;
+            }
+        });
+    } else {
+        // For yearly view, use the month formatting function
+        formattedLabels = data.labels.map(label => formatMonthLabel(label));
+    }
+    
+    const chartData = {
+        labels: formattedLabels,
+        datasets: [
+            {
+                label: 'Uploads',
+                data: data.uploads || [],
+                borderColor: '#3b82f6',
+                backgroundColor: uploadGradient,
+                fill: true,
+                tension: 0.4
+            },
+            {
+                label: 'Downloads',
+                data: data.downloads || [],
+                borderColor: '#10b981',
+                backgroundColor: downloadGradient,
+                fill: true,
+                tension: 0.4
+            }
+        ]
+    };
+
+    if (window.trendsChart instanceof Chart) {
+        window.trendsChart.destroy();
+    }
+
+    window.trendsChart = new Chart(ctx, {
+        type: 'line',
+        data: chartData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { 
+                legend: { position: 'bottom' },
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            // Customize tooltip title based on period
+                            const item = tooltipItems[0];
+                            const label = data.labels[item.dataIndex];
+                            if (period === 'month') {
+                                // For month view, show full date (e.g., "15 July 2023")
+                                const date = new Date(label);
+                                if (!isNaN(date.getTime())) {
+                                    return date.toLocaleDateString(undefined, {
+                                        day: 'numeric',
+                                        month: 'long',
+                                        year: 'numeric'
+                                    });
+                                }
+                            }
+                            return item.label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: { 
+                    grid: { display: false },
+                    ticks: {
+                        maxRotation: period === 'month' ? 45 : 0,
+                        autoSkip: true,
+                        maxTicksLimit: period === 'month' ? 15 : 12
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { borderDash: [2, 4], color: 'rgba(200, 200, 200, 0.3)' }
+                }
+            }
+        }
+    });
+}
+
+
+    // Function to refresh only the trend data (called when period selection changes)
+    function refreshTrendData() {
+        // Show loading state
+        const trendsCanvas = document.getElementById("trendsChart");
+        if (trendsCanvas) {
+            const container = trendsCanvas.parentElement;
+            const loadingIndicator = document.createElement('div');
+            loadingIndicator.id = 'trend-loading';
+            loadingIndicator.className = 'absolute inset-0 flex items-center justify-center bg-white bg-opacity-70 dark:bg-gray-800 dark:bg-opacity-70 z-10';
+            loadingIndicator.innerHTML = `
+                <div class="flex flex-col items-center">
+                    <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-600"></div>
+                    <p class="mt-2 text-gray-600 dark:text-gray-300">Memuat data...</p>
+                </div>
+            `;
+            
+            // Only add if not already present
+            if (!document.getElementById('trend-loading')) {
+                container.style.position = 'relative';
+                container.appendChild(loadingIndicator);
+            }
+        }
+        
+        // Get the selected period
+        const period = document.getElementById('trendPeriod').value || 'year';
+        
+        // Fetch and update the chart
+        fetchTrendData()
+            .then(data => {
+                // Remove loading indicator
+                const loadingIndicator = document.getElementById('trend-loading');
+                if (loadingIndicator) {
+                    loadingIndicator.remove();
+                }
+                
+                // Check if we have valid data
+                if (!data || !data.labels || data.labels.length === 0) {
+                    console.warn("No trend data available");
+                    handleDataError("trends");
+                    return;
+                }
+                
+                // Create or update the chart
+                createTrendChart(data);
+            })
+            .catch(error => {
+                // Remove loading indicator
+                const loadingIndicator = document.getElementById('trend-loading');
+                if (loadingIndicator) {
+                    loadingIndicator.remove();
+                }
+                
+                console.error("Error refreshing trend data:", error);
+                handleDataError("trends");
+            });
+    }
+
+    // Main function to load all dashboard data
+    function loadDashboardData() {
+        let analyticsLoaded = false;
+        let trendsLoaded = false;
+        
+        fetch("{{ url_for('analytics') }}")
+            .then(response => {
+                if (!response.ok) throw new Error('Analytics API error');
+                return response.json();
+            })
+            .then(data => {
+                updateDashboardStats(data);
+                createTypeAndTagCharts(data);
+                analyticsLoaded = true;
+            })
+            .catch(error => {
+                console.error("Error fetching analytics:", error);
+                handleDataError("analytics");
+                analyticsLoaded = true;
+            });
+            
+        fetchTrendData()
+            .then(data => {
+                createTrendChart(data);
+                trendsLoaded = true;
+            })
+            .catch(error => {
+                console.error("Error processing trend data:", error);
+                handleDataError("trends");
+                trendsLoaded = true;
+            });
+            
+        setTimeout(() => {
+            if (!analyticsLoaded || !trendsLoaded) {
+                console.warn("Data loading timeout reached");
+                handleDataError("timeout");
+            }
+        }, 10000);
+    }
+    
+    function updateDashboardStats(data) {
+        updateNewFilesList(data.recent_uploads || []);
+        updateTopFilesList(data.top_files || []);
+    }
+    
+    function updateNewFilesList(newFiles) {
+        const newFilesList = document.getElementById('new_files_list');
+        newFilesList.innerHTML = '';
+        if (newFiles.length > 0) {
+            newFiles.forEach(file => {
+                const li = document.createElement('li');
+                li.className = 'p-2 bg-gray-50 dark:bg-gray-700 rounded flex items-center justify-between';
+                const fileInfo = document.createElement('span');
+                fileInfo.className = 'flex items-center';
+                fileInfo.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span class="truncate max-w-xs">${file.title}</span>
+                `;
+                const uploadDate = document.createElement('span');
+                uploadDate.className = 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-xs font-medium px-2.5 py-0.5 rounded-full ml-2';
+                uploadDate.textContent = file.upload_date;
+                li.appendChild(fileInfo);
+                li.appendChild(uploadDate);
+                newFilesList.appendChild(li);
+            });
+        } else {
+            const li = document.createElement('li');
+            li.className = 'p-2 bg-gray-50 dark:bg-gray-700 rounded text-center';
+            li.textContent = 'Tidak ada data';
+            newFilesList.appendChild(li);
+        }
+    }
+    
+    function updateTopFilesList(topFiles) {
+        const topFilesList = document.getElementById('top_files_list');
+        topFilesList.innerHTML = '';
+        if (topFiles.length > 0) {
+            topFiles.forEach(file => {
+                const li = document.createElement('li');
+                li.className = 'p-2 bg-gray-50 dark:bg-gray-700 rounded flex items-center justify-between';
+                const fileInfo = document.createElement('span');
+                fileInfo.className = 'flex items-center';
+                fileInfo.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span class="truncate max-w-xs">${file.title}</span>
+                `;
+                const downloadCount = document.createElement('span');
+                downloadCount.className = 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-xs font-medium px-2.5 py-0.5 rounded-full ml-2';
+                downloadCount.textContent = `${file.download_count}`;
+                li.appendChild(fileInfo);
+                li.appendChild(downloadCount);
+                topFilesList.appendChild(li);
+            });
+        } else {
+            const li = document.createElement('li');
+            li.className = 'p-2 bg-gray-50 dark:bg-gray-700 rounded text-center';
+            li.textContent = 'Tidak ada data';
+            topFilesList.appendChild(li);
+        }
+    }
+    
+    function createTypeAndTagCharts(data) {
+        if (data.files_by_type && Object.keys(data.files_by_type).length > 0) {
+            const fileTypeLabels = Object.keys(data.files_by_type);
+            const fileTypeValues = Object.values(data.files_by_type);
+            const fileTypeColors = generateColors(fileTypeLabels.length);
+            const filesCanvas = document.getElementById("filesChart");
+            if (filesCanvas) {
+                const ctxFiles = filesCanvas.getContext("2d");
+                new Chart(ctxFiles, {
+                    type: "doughnut",
+                    data: {
+                        labels: fileTypeLabels,
+                        datasets: [{
+                            data: fileTypeValues,
+                            backgroundColor: fileTypeColors,
+                            borderWidth: 2,
+                            borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        ...chartOptions,
+                        cutout: '70%',
+                        plugins: {
+                            ...chartOptions.plugins,
+                            legend: { ...chartOptions.plugins.legend, position: 'right' }
+                        }
+                    }
+                });
+            }
+        }
+        if (data.files_by_tag && Object.keys(data.files_by_tag).length > 0) {
+            const tagLabels = Object.keys(data.files_by_tag);
+            const tagValues = Object.values(data.files_by_tag);
+            const tagColors = generateColors(tagLabels.length);
+            const tagsCanvas = document.getElementById("tagsChart");
+            if (tagsCanvas) {
+                const ctxTags = tagsCanvas.getContext("2d");
+                new Chart(ctxTags, {
+                    type: "pie",
+                    data: {
+                        labels: tagLabels,
+                        datasets: [{
+                            data: tagValues,
+                            backgroundColor: tagColors,
+                            borderWidth: 2,
+                            borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        ...chartOptions,
+                        plugins: {
+                            ...chartOptions.plugins,
+                            legend: { ...chartOptions.plugins.legend, position: 'right' }
+                        }
+                    }
+                });
+            }
+        }
+    }
+    
+    function handleDataError(errorType) {
+        console.error(`Data loading error: ${errorType}`);
+        if (errorType === "analytics" || errorType === "timeout") {
+            document.querySelectorAll('[id$="-users"], [id$="-files"], [id$="-days"]').forEach(el => {
+                el.textContent = "Error";
+                el.classList.add("text-red-500");
+            });
+        }
+        if (errorType === "trends" || errorType === "timeout") {
+            showChartError("trendsChart");
+        }
+        if (errorType === "analytics" || errorType === "timeout") {
+            showChartError("filesChart");
+            showChartError("tagsChart");
+        }
+    }
+    
+    function showChartError(canvasId) {
+        const canvas = document.getElementById(canvasId);
+        if (canvas) {
+            const container = canvas.parentElement;
+            canvas.remove();
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'flex items-center justify-center h-full';
+            errorMsg.innerHTML = `
+                <div class="text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p class="mt-2 text-gray-600 dark:text-gray-400">Gagal memuat data</p>
+                    <button id="retry-${canvasId}" class="mt-2 px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                        Coba Lagi
+                    </button>
+                </div>
+            `;
+            container.appendChild(errorMsg);
+            document.getElementById(`retry-${canvasId}`).addEventListener('click', function() {
+                errorMsg.remove();
+                const newCanvas = document.createElement('canvas');
+                newCanvas.id = canvasId;
+                container.appendChild(newCanvas);
+                loadDashboardData();
+            });
+        }
+    }
+    
+    // Initialize dashboard on page load and add listener for trend period change
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("DOM loaded, initializing dashboard...");
+        loadDashboardData();
+        
+        // Add event listener for trend period change
+        const trendPeriodSelector = document.getElementById('trendPeriod');
+        if (trendPeriodSelector) {
+            console.log("Setting up trend period change listener");
+            trendPeriodSelector.addEventListener('change', function(e) {
+                console.log("Trend period changed to:", e.target.value);
+                refreshTrendData();
+            });
+        } else {
+            console.error("Trend period selector not found");
+        }
+    });
+</script>
+{% endblock %}

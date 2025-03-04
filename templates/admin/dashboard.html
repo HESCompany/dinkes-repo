@@ -1,0 +1,1255 @@
+{% extends "base.html" %}
+
+{% block title %}Halaman Pengelola - Repositori File{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Halaman Pengelola</h1>
+
+    <div class="mb-6 flex space-x-4">
+        <button onclick="toggleCreateUserForm()"
+            class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition-colors duration-300">
+            Buat Pengguna Baru
+        </button>
+        <a href="{{ url_for('admin_file_management') }}"
+            class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition-colors duration-300">
+            File Manager
+        </a>
+    </div>
+
+    <div id="create-user-form" class="hidden mb-6">
+        <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+            <form action="{{ url_for('create_user') }}" method="POST" class="p-8 space-y-6">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="email">
+                        Email
+                    </label>
+                    <input
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        id="email" name="email" type="email" placeholder="Email" required>
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="password">
+                        Password
+                    </label>
+                    <input
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        id="password" name="password" type="password" placeholder="Password" required>
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="role">
+                        Role
+                    </label>
+                    <select
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        id="role" name="role" required>
+                        <option value="regular">Regular</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="space-y-2">
+                    <label for="admin_password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Password Login Admin
+                    </label>
+                    <input
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        id="admin_password" name="admin_password" type="password" placeholder="Password Login Admin"
+                        required>
+                </div>
+                <div class="flex items-center justify-between pt-4">
+                    <button
+                        class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors duration-300"
+                        type="submit">
+                        Buat Pengguna
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden mb-6">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                    <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        <a href="javascript:void(0);" onclick="sortTable('email')">
+                            Email
+                            <span class="sort-icon" data-column="email"></span>
+                        </a>
+                    </th>
+                    <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        <a href="javascript:void(0);" onclick="sortTable('role')">
+                            Role
+                            <span class="sort-icon" data-column="role"></span>
+                        </a>
+                    </th>
+                    <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        <a href="javascript:void(0);" onclick="sortTable('date_added')">
+                            Tanggal Ditambahkan
+                            <span class="sort-icon" data-column="date_added"></span>
+                        </a>
+                    </th>
+                    <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                {% for user in pagination.items %}
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">{{ user.email }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">{{ user.role }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">{{
+                        user.date_added.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="openEditUserModal('{{ user.id }}')"
+                            class="px-3 py-1 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors duration-300 mr-3">Edit</button>
+                        <form action="{{ url_for('delete_user', user_id=user.id) }}" method="POST" class="inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit"
+                                class="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-300 mr-3"
+                                onclick="return confirm('Yakin ingin menghapus akun?')">Hapus</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex justify-center items-center space-x-3 mt-4 mb-4">
+        <!-- Items per page dropdown -->
+        <div>
+            <label for="per_page">Per Halaman</label>
+            <select name="per_page" id="per_page"
+                class="px-3 ml-1  py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                <option value="10" {% if query_params.per_page=='10' %}selected{% endif %}>10</option>
+                <option value="20" {% if query_params.per_page=='20' %}selected{% endif %}>20</option>
+                <option value="50" {% if query_params.per_page=='50' %}selected{% endif %}>50</option>
+                <option value="100" {% if query_params.per_page=='100' %}selected{% endif %}>100</option>
+            </select>
+        </div>
+
+        <!-- Previous button -->
+        {% if pagination.pages > 1 %}
+        {% if pagination.has_prev %}
+        <a href="{{ url_for('index', page=pagination.prev_num, per_page=query_params.per_page) }}"
+            class="px-3 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors duration-300">
+            Sebelumnya
+        </a>
+        {% endif %}
+        {% endif %}
+
+        <!-- Page number -->
+        <span class="px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            Halaman {{ pagination.page }} Dari {{ pagination.pages if pagination.pages > 0 else 1 }}
+        </span>
+
+        <!-- Next button -->
+        {% if pagination.pages > 1 %}
+        {% if pagination.has_next %}
+        <a href="{{ url_for('index', page=pagination.next_num, per_page=query_params.per_page) }}"
+            class="px-3 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors duration-300">
+            Selanjutnya
+        </a>
+        {% endif %}
+        {% endif %}
+    </div>
+
+    <!-- Analytics Section -->
+    <div class="mt-8">
+
+        <!-- File Analytics -->
+        <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden mb-8">
+            <div class="p-6">
+                <h2 class="text-2xl font-bold mb-4">File Analytics</h2>
+
+                <!-- Stat Cards for File Metrics -->
+                <!-- Stat Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                    <!-- Total Users Card -->
+                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 p-6 rounded-lg shadow-lg text-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-blue-100">Total Pengguna</p>
+                                <p id="total-users" class="text-4xl font-bold mt-2">1</p>
+                            </div>
+                            <div class="bg-blue-400 bg-opacity-30 p-3 rounded-full">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Documents Card -->
+                    <div class="bg-gradient-to-br from-green-500 to-green-600 p-6 rounded-lg shadow-lg text-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-green-100">Total Dokumen</p>
+                                <p id="total-files" class="text-4xl font-bold mt-2">1000</p>
+                            </div>
+                            <div class="bg-green-400 bg-opacity-30 p-3 rounded-full">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Last 7 Days Card -->
+                    <div class="bg-gradient-to-br from-purple-500 to-purple-600 p-6 rounded-lg shadow-lg text-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-purple-100">Dokumen 7 Hari Terakhir</p>
+                                <p id="last-seven-days" class="text-4xl font-bold mt-2">1000</p>
+                            </div>
+                            <div class="bg-purple-400 bg-opacity-30 p-3 rounded-full">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Last 30 Days Card -->
+                    <div class="bg-gradient-to-br from-amber-500 to-amber-600 p-6 rounded-lg shadow-lg text-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-amber-100">Dokumen 30 Hari Terakhir</p>
+                                <p id="last-thirty-days" class="text-4xl font-bold mt-2">1000</p>
+                            </div>
+                            <div class="bg-amber-400 bg-opacity-30 p-3 rounded-full">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trend Chart: Uploads & Downloads -->
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-center">Trend Upload & Download</h3>
+                        <div class="flex items-center">
+                            <label for="trendPeriod" class="mr-2 text-gray-700 dark:text-gray-300">Tampilkan:</label>
+                            <select id="trendPeriod"
+                                class="rounded border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                                <option value="week">1 Minggu</option>
+                                <option value="month">1 Bulan</option>
+                                <option value="year">1 Tahun</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="h-64">
+                        <canvas id="trendsChartDashboard"></canvas>
+                    </div>
+                </div>
+
+                <!-- Files by Type & Tag Charts -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold text-center">File Berdasarkan Tipe</h3>
+                            <div class="flex items-center">
+                                <label for="typePeriod" class="mr-2 text-gray-700 dark:text-gray-300">Tampilkan:</label>
+                                <select id="typePeriod"
+                                    class="rounded border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                                    <option value="all">Semua</option>
+                                    <option value="week">1 Minggu</option>
+                                    <option value="month">1 Bulan</option>
+                                    <option value="year">1 Tahun</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="h-64">
+                            <canvas id="filesByTypeChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold text-center">File Berdasarkan Tag</h3>
+                            <div class="flex items-center">
+                                <label for="tagPeriod" class="mr-2 text-gray-700 dark:text-gray-300">Tampilkan:</label>
+                                <select id="tagPeriod"
+                                    class="rounded border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                                    <option value="all">Semua</option>
+                                    <option value="week">1 Minggu</option>
+                                    <option value="month">1 Bulan</option>
+                                    <option value="year">1 Tahun</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="h-64">
+                            <canvas id="filesByTagChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Storage Usage Analysis -->
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
+                    <h3 class="text-lg font-semibold mb-4 text-center">Storage Usage Analysis</h3>
+                    <div class="h-64">
+                        <canvas id="storageUsageChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Tag Performance Matrix -->
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <h3 class="text-lg font-semibold mb-4 text-center">Tag Performance Matrix</h3>
+                    <div class="flex justify-center items-center mb-4">
+                        <label for="tagPerformancePeriod"
+                            class="mr-2 text-gray-700 dark:text-gray-300">Tampilkan:</label>
+                        <select id="tagPerformancePeriod"
+                            class="rounded border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                            <option value="all">Semua</option>
+                            <option value="week">1 Minggu</option>
+                            <option value="month">1 Bulan</option>
+                            <option value="year">1 Tahun</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="text-center font-semibold mb-2">Uploads per Tag</h4>
+                            <canvas id="tagUploadChart" class="h-64"></canvas>
+                        </div>
+                        <div>
+                            <h4 class="text-center font-semibold mb-2">Downloads per Tag</h4>
+                            <canvas id="tagDownloadChart" class="h-64"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Analytics -->
+        <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden mb-8">
+            <div class="p-6">
+                <h2 class="text-2xl font-bold mb-4">User Analytics</h2>
+
+                <!-- User Stat Card -->
+                <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded mb-8">
+                    <p class="text-sm text-gray-600 dark:text-gray-300">Total Pengguna</p>
+                    <p id="total-users" class="text-3xl font-bold">{{ total_users }}</p>
+                </div>
+
+                <!-- Access Control & Recent Login Attempts -->
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <h3 class="text-lg font-semibold mb-4 text-center">Access Control Stats</h3>
+                    <div class="flex justify-around">
+                        <div>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">Successful Logins</p>
+                            <p id="successful-logins" class="text-2xl font-bold">0</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">Failed Logins</p>
+                            <p id="failed-logins" class="text-2xl font-bold">0</p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <h4 class="text-lg font-semibold text-center mb-2">Recent Login Attempts</h4>
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead class="bg-gray-50 dark:bg-gray-700">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500">Email</th>
+                                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500">Status</th>
+                                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500">IP Address</th>
+                                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500">Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody id="login-attempts-list"
+                                class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                <!-- Login attempts will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Analytics -->
+        <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+            <div class="p-6">
+                <h2 class="text-2xl font-bold mb-4">System Analytics</h2>
+
+                <!-- Server Stats and Top Downloads -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                    <!-- Server Performance Cards -->
+                    <!-- CPU Usage Card -->
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center">
+                                <div class="p-2 rounded-lg bg-blue-100 dark:bg-blue-900 mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="h-6 w-6 text-blue-600 dark:text-blue-300" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">CPU Usage</p>
+                                    <p id="cpu_usage_text" class="text-2xl font-bold text-gray-900 dark:text-white">0.0%
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
+                            <div id="cpu_usage_bar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
+                                style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Memory Usage Card -->
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center">
+                                <div class="p-2 rounded-lg bg-green-100 dark:bg-green-900 mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="h-6 w-6 text-green-600 dark:text-green-300" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Memory Usage</p>
+                                    <p id="mem_usage_text" class="text-2xl font-bold text-gray-900 dark:text-white">0.0
+                                        GB / 0.0 GB</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
+                            <div id="mem_usage_bar" class="bg-green-600 h-2.5 rounded-full transition-all duration-300"
+                                style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Disk Usage Card -->
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center">
+                                <div class="p-2 rounded-lg bg-purple-100 dark:bg-purple-900 mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="h-6 w-6 text-purple-600 dark:text-purple-300" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Disk Usage</p>
+                                    <p id="disk_usage_text" class="text-2xl font-bold text-gray-900 dark:text-white">0.0
+                                        GB / 0.0 GB</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
+                            <div id="disk_usage_bar"
+                                class="bg-purple-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Keep the existing Top Downloads section -->
+                </div>
+
+                <!-- Historical System Health -->
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
+                    <h3 class="text-lg font-semibold mb-4 text-center">Historical System Health</h3>
+                    <div class="h-64">
+                        <canvas id="historicalHealthChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden mb-8">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-bold">Visitor Analytics</h2>
+                            <div class="flex items-center">
+                                <label for="visitorAnalyticsPeriod"
+                                    class="mr-2 text-gray-700 dark:text-gray-300">Timeline:</label>
+                                <select id="visitorAnalyticsPeriod"
+                                    class="rounded border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                                    <option value="day">1 Hari</option>
+                                    <option value="week" selected>1 Minggu</option>
+                                    <option value="month">1 Bulan</option>
+                                    <option value="year">1 Tahun</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Visitor Count -->
+                            <div>
+                                <h3 class="text-lg font-semibold mb-4 text-center">Visitor Count</h3>
+                                <div class="h-64">
+                                    <canvas id="visitorCountChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Visitor Demographics -->
+                            <div>
+                                <h3 class="text-lg font-semibold mb-4 text-center">Visitor Demographics</h3>
+                                <div class="h-64">
+                                    <canvas id="visitorDemographicsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Trends -->
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
+                    <h3 class="text-lg font-semibold mb-4 text-center">Search Trends</h3>
+                    <div class="h-64">
+                        <canvas id="searchTrendsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+<div id="edit-user-modal" class="fixed mt-6 z-10 inset-0 overflow-y-auto hidden">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div
+            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4 max-h-[80vh] overflow-y-auto">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="modal-title">
+                    Edit Pengguna
+                </h3>
+                <div class="mt-2">
+                    <form id="edit-user-form" method="POST" class="space-y-6">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="space-y-2">
+                            <label for="edit-email"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                            <input type="email" name="email" id="edit-email" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        </div>
+                        <div class="space-y-2">
+                            <label for="edit-role"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Role</label>
+                            <select name="role" id="edit-role" id="edit-role" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <option value="regular">Regular</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label for="edit-password"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password Baru
+                                (Isi Jika Ingin Merubah)</label>
+                            <input type="password" name="password" id="edit-password"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        </div>
+                        <div class="space-y-2">
+                            <label for="edit-secret-key"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password
+                                Login
+                                Admin</label>
+                            <input type="password" name="secret_key" id="edit-secret-key" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button type="submit" form="edit-user-form"
+                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:ml-3 sm:w-auto sm:text-sm">
+                    Simpan Perubahan
+                </button>
+                <button type="button" onclick="closeEditUserModal()"
+                    class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    Batal
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    function toggleCreateUserForm() {
+        const form = document.getElementById('create-user-form');
+        form.classList.toggle('hidden');
+    }
+
+    document.getElementById("per_page").addEventListener("change", function () {
+        const url = new URL(window.location.href);
+        url.searchParams.set("per_page", this.value);
+        url.searchParams.set("page", 1); // Reset to first page on per_page change
+        window.location.href = url.toString();
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentSort = urlParams.get("sort") || "date_added";
+        const currentOrder = urlParams.get("order") || "desc";
+
+        // Set the sorting arrow based on the current order
+        const sortIcons = document.querySelectorAll(".sort-icon");
+        sortIcons.forEach(icon => {
+            const column = icon.getAttribute("data-column");
+            if (column === currentSort) {
+                icon.innerHTML = currentOrder === "asc" ? " ▲" : " ▼";
+            }
+        });
+    });
+
+    function sortTable(column) {
+        const url = new URL(window.location.href);
+        const currentSort = url.searchParams.get("sort");
+        const currentOrder = url.searchParams.get("order");
+
+        if (currentSort === column) {
+            url.searchParams.set("order", currentOrder === "asc" ? "desc" : "asc");
+        } else {
+            url.searchParams.set("sort", column);
+            url.searchParams.set("order", "asc");
+        }
+
+        window.location.href = url.toString();
+    }
+
+    function openEditUserModal(userId) {
+        const modal = document.getElementById('edit-user-modal');
+        const form = document.getElementById('edit-user-form');
+
+        // Fetch user data and populate the form
+        fetch(`/admin/get_user/${userId}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('edit-email').value = data.email;
+                document.getElementById('edit-role').value = data.role;
+                form.action = `/admin/edit_user/${userId}`;
+            });
+
+        modal.classList.remove('hidden');
+    }
+
+    function closeEditUserModal() {
+        const modal = document.getElementById('edit-user-modal');
+        modal.classList.add('hidden');
+    }
+    function fetchDashboardAnalytics() {
+    fetch("{{ url_for('analytics') }}")
+        .then(response => response.json())
+        .then(data => {
+            console.log("Received Analytics Data:", data); // Debugging
+
+            let cpuUsageElement = document.getElementById("cpu_usage_dashboard");
+            let memUsageElement = document.getElementById("mem_usage_dashboard");
+            let diskUsageElement = document.getElementById("disk_usage_dashboard");
+            let cpuBarElement = document.getElementById("cpu_usage_bar_dashboard");
+            let memBarElement = document.getElementById("mem_usage_bar_dashboard");
+            let diskBarElement = document.getElementById("disk_usage_bar_dashboard");
+
+            // Ensure elements exist before updating
+            if (!cpuUsageElement || !memUsageElement || !diskUsageElement) {
+                console.error("One or more elements not found in the DOM!");
+                return;
+            }
+
+            // Debug: Log if data is NaN
+            if (isNaN(data.cpu_usage) || isNaN(data.mem_usage) || isNaN(data.disk_usage)) {
+                console.error("Invalid data received:", data);
+                return;
+            }
+
+            // Update text values
+            cpuUsageElement.textContent = data.cpu_usage + "%";
+            memUsageElement.textContent = data.mem_usage + "%";
+            diskUsageElement.textContent = data.disk_usage + "%";
+
+            // Update progress bars
+            cpuBarElement.style.width = data.cpu_usage + "%";
+            memBarElement.style.width = data.mem_usage + "%";
+            diskBarElement.style.width = data.disk_usage + "%";
+        })
+        .catch(error => console.error("Error fetching analytics:", error));
+}
+
+// Run after page loads
+document.addEventListener("DOMContentLoaded", fetchDashboardAnalytics);
+
+    // Main function to load all dashboard data
+    function loadDashboardData() {
+        let analyticsLoaded = false;
+        let trendsLoaded = false;
+
+        fetch("{{ url_for('analytics') }}")
+            .then(response => {
+                if (!response.ok) throw new Error('Analytics API error');
+                return response.json();
+            })
+            .then(data => {
+                updateDashboardStats(data);
+                createTypeAndTagCharts(data);
+                analyticsLoaded = true;
+            })
+            .catch(error => {
+                console.error("Error fetching analytics:", error);
+                handleDataError("analytics");
+                analyticsLoaded = true;
+            });
+
+        fetchTrendData()
+            .then(data => {
+                createTrendChart(data);
+                trendsLoaded = true;
+            })
+            .catch(error => {
+                console.error("Error processing trend data:", error);
+                handleDataError("trends");
+                trendsLoaded = true;
+            });
+
+        setTimeout(() => {
+            if (!analyticsLoaded || !trendsLoaded) {
+                console.warn("Data loading timeout reached");
+                handleDataError("timeout");
+            }
+        }, 10000);
+    }
+
+    function updateDashboardStats(data) {
+        document.getElementById("total-files").textContent = data.total_files;
+        document.getElementById("total-users").textContent = data.total_users;
+        document.getElementById("last-seven-days").textContent = data.last_seven_days;
+        document.getElementById("last-thirty-days").textContent = data.last_thirty_days;
+
+        const cpuUsage = parseFloat(data.cpu_usage);
+        const memUsage = parseFloat(data.mem_usage);
+
+        // Update CPU usage
+        document.getElementById('cpu_usage_text').textContent = `${cpuUsage.toFixed(1)}%`;
+        document.getElementById('cpu_usage_bar').style.width = `${cpuUsage}%`;
+        if (cpuUsage > 80) {
+            document.getElementById('cpu_usage_bar').classList.remove('bg-blue-600');
+            document.getElementById('cpu_usage_bar').classList.add('bg-red-600');
+        } else if (cpuUsage > 60) {
+            document.getElementById('cpu_usage_bar').classList.remove('bg-blue-600');
+            document.getElementById('cpu_usage_bar').classList.add('bg-amber-500');
+        }
+
+        // Update Memory usage with GB format
+        const totalMemGB = data.total_memory_gb || 8.0; // Default to 8GB if not provided
+        const usedMemGB = (totalMemGB * memUsage / 100).toFixed(1);
+        document.getElementById('mem_usage_text').textContent = `${usedMemGB} GB / ${totalMemGB} GB`;
+        document.getElementById('mem_usage_bar').style.width = `${memUsage}%`;
+        if (memUsage > 80) {
+            document.getElementById('mem_usage_bar').classList.remove('bg-blue-600');
+            document.getElementById('mem_usage_bar').classList.add('bg-red-600');
+        } else if (memUsage > 60) {
+            document.getElementById('mem_usage_bar').classList.remove('bg-blue-600');
+            document.getElementById('mem_usage_bar').classList.add('bg-amber-500');
+        }
+
+        // Update Disk usage
+        const totalDiskGB = data.total_disk_gb || 1000.0; // Default to 1TB if not provided
+        const usedDiskGB = data.used_disk_gb || 2.7; // Default if not provided
+        const diskUsagePercent = (usedDiskGB / totalDiskGB * 100).toFixed(1);
+
+        document.getElementById('disk_usage_text').textContent = `${usedDiskGB.toFixed(1)} GB / ${totalDiskGB.toFixed(1)} GB`;
+        document.getElementById('disk_usage_bar').style.width = `${diskUsagePercent}%`;
+        if (parseFloat(diskUsagePercent) > 80) {
+            document.getElementById('disk_usage_bar').classList.remove('bg-blue-600');
+            document.getElementById('disk_usage_bar').classList.add('bg-red-600');
+        } else if (parseFloat(diskUsagePercent) > 60) {
+            document.getElementById('disk_usage_bar').classList.remove('bg-blue-600');
+            document.getElementById('disk_usage_bar').classList.add('bg-amber-500');
+        }
+
+        updateNewFilesList(data.recent_uploads || []);
+        updateTopFilesList(data.top_files || []);
+    }
+
+    function showChartError(canvasId) {
+        const canvas = document.getElementById(canvasId);
+        if (canvas) {
+            const container = canvas.parentElement;
+            canvas.remove();
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'flex items-center justify-center h-full';
+            errorMsg.innerHTML = `
+                <div class="text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p class="mt-2 text-gray-600 dark:text-gray-400">Gagal memuat data</p>
+                    <button id="retry-${canvasId}" class="mt-2 px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                        Coba Lagi
+                    </button>
+                </div>
+            `;
+            container.appendChild(errorMsg);
+            document.getElementById(`retry-${canvasId}`).addEventListener('click', function () {
+                errorMsg.remove();
+                const newCanvas = document.createElement('canvas');
+                newCanvas.id = canvasId;
+                container.appendChild(newCanvas);
+                loadDashboardData();
+            });
+        }
+    }
+    // Trend Chart for Uploads & Downloads
+    function fetchTrendDataDashboard(period) {
+        return fetch("{{ url_for('trend_data') }}" + "?period=" + period)
+            .then(response => response.json())
+            .catch(error => {
+                console.error("Error fetching trend data:", error);
+                return { labels: [], uploads: [], downloads: [] };
+            });
+    }
+    function createTrendChartDashboard(data) {
+        const canvas = document.getElementById("trendsChartDashboard");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        const uploadGradient = ctx.createLinearGradient(0, 0, 0, 400);
+        uploadGradient.addColorStop(0, 'rgba(59, 130, 246, 0.5)');
+        uploadGradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
+        const downloadGradient = ctx.createLinearGradient(0, 0, 0, 400);
+        downloadGradient.addColorStop(0, 'rgba(16, 185, 129, 0.5)');
+        downloadGradient.addColorStop(1, 'rgba(16, 185, 129, 0)');
+        const chartData = {
+            labels: data.labels,
+            datasets: [
+                { label: 'Uploads', data: data.uploads, borderColor: '#3b82f6', backgroundColor: uploadGradient, fill: true, tension: 0.4 },
+                { label: 'Downloads', data: data.downloads, borderColor: '#10b981', backgroundColor: downloadGradient, fill: true, tension: 0.4 }
+            ]
+        };
+        if (window.trendsChartDashboard instanceof Chart) { window.trendsChartDashboard.destroy(); }
+        window.trendsChartDashboard = new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } },
+                scales: { x: { grid: { display: false } }, y: { beginAtZero: true, grid: { borderDash: [2, 4], color: 'rgba(200,200,200,0.3)' } } }
+            }
+        });
+    }
+    function refreshTrendChartDashboard() {
+        const period = document.getElementById("trendPeriod").value;
+        fetchTrendDataDashboard(period).then(data => { createTrendChartDashboard(data); });
+    }
+
+    // Files by Type Chart
+    function fetchFilesByTypeData(period) {
+        return fetch("{{ url_for('analytics_files_by_type') }}" + "?period=" + period)
+            .then(response => response.json())
+            .catch(error => {
+                console.error("Error fetching files by type data:", error);
+                return {};
+            });
+    }
+    function createFilesByTypeChart(data) {
+        const ctx = document.getElementById("filesByTypeChart").getContext("2d");
+        const labels = Object.keys(data);
+        const counts = Object.values(data);
+        const backgroundColors = labels.map((_, i) => {
+            const colors = ['#3b82f6', '#10b981', '#ef4444', '#f59e0b', '#8b5cf6', '#f472b6'];
+            return colors[i % colors.length];
+        });
+        if (window.filesByTypeChart instanceof Chart) { window.filesByTypeChart.destroy(); }
+        window.filesByTypeChart = new Chart(ctx, {
+            type: 'pie',
+            data: { labels: labels, datasets: [{ data: counts, backgroundColor: backgroundColors }] },
+            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+        });
+    }
+    function refreshFilesByTypeChart() {
+        const period = document.getElementById("typePeriod").value;
+        fetchFilesByTypeData(period).then(data => { createFilesByTypeChart(data); });
+    }
+
+    // Files by Tag Chart
+    function fetchFilesByTagData(period) {
+        return fetch("{{ url_for('analytics_files_by_tag') }}" + "?period=" + period)
+            .then(response => response.json())
+            .catch(error => {
+                console.error("Error fetching files by tag data:", error);
+                return {};
+            });
+    }
+    function createFilesByTagChart(data) {
+        const ctx = document.getElementById("filesByTagChart").getContext("2d");
+        const labels = Object.keys(data);
+        const counts = Object.values(data);
+        const backgroundColors = labels.map((_, i) => {
+            const colors = ['#3b82f6', '#10b981', '#ef4444', '#f59e0b', '#8b5cf6', '#f472b6'];
+            return colors[i % colors.length];
+        });
+        if (window.filesByTagChart instanceof Chart) { window.filesByTagChart.destroy(); }
+        window.filesByTagChart = new Chart(ctx, {
+            type: 'bar',
+            data: { labels: labels, datasets: [{ label: 'Jumlah File', data: counts, backgroundColor: backgroundColors }] },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    }
+    function refreshFilesByTagChart() {
+        const period = document.getElementById("tagPeriod").value;
+        fetchFilesByTagData(period).then(data => { createFilesByTagChart(data); });
+    }
+
+    // ----- Additional Analytics: Storage Usage, Tag Performance, Historical Health, Visitor Demographics, Search Trends, Access Control -----
+    function fetchStorageUsage() {
+        return fetch("{{ url_for('analytics_storage_usage') }}")
+            .then(response => response.json())
+            .catch(error => { console.error("Error fetching storage usage:", error); return {}; });
+    }
+    function createStorageUsageChart(data) {
+        const ctx = document.getElementById("storageUsageChart").getContext("2d");
+        // Use raw numbers without locale formatting
+        const chartData = {
+            labels: ["Used (" + data.unit + ")", "Free (" + data.unit + ")"],
+            datasets: [{
+                data: [data.used, data.free],
+                backgroundColor: ["#ef4444", "#10b981"]
+            }]
+        };
+        if (window.storageUsageChart instanceof Chart) {
+            window.storageUsageChart.destroy();
+        }
+        window.storageUsageChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: chartData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                // Return the raw number (e.g., 123.45 MB) without commas
+                                return context.parsed + " " + data.unit;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function refreshStorageUsageChart() {
+        fetchStorageUsage().then(data => { createStorageUsageChart(data); });
+    }
+
+    // Fetch tag performance data using the new timeframe selector
+    function fetchTagPerformance() {
+        const period = document.getElementById("tagPerformancePeriod").value;
+        return fetch("{{ url_for('analytics_tag_performance') }}" + "?period=" + period)
+            .then(response => response.json())
+            .catch(error => {
+                console.error("Error fetching tag performance:", error);
+                return {};
+            });
+    }
+
+    // Create chart for uploads per tag
+    function createTagUploadChart(data) {
+        const ctx = document.getElementById("tagUploadChart").getContext("2d");
+        const labels = Object.keys(data);
+        const uploadCounts = labels.map(tag => data[tag].upload_count);
+        const backgroundColors = labels.map((_, i) => {
+            const colors = ['#3b82f6', '#10b981', '#ef4444', '#f59e0b', '#8b5cf6', '#f472b6'];
+            return colors[i % colors.length];
+        });
+        if (window.tagUploadChart instanceof Chart) {
+            window.tagUploadChart.destroy();
+        }
+        window.tagUploadChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Uploads',
+                    data: uploadCounts,
+                    backgroundColor: backgroundColors
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+
+    // Create chart for downloads per tag
+    function createTagDownloadChart(data) {
+        const ctx = document.getElementById("tagDownloadChart").getContext("2d");
+        const labels = Object.keys(data);
+        const downloadCounts = labels.map(tag => data[tag].download_count);
+        const backgroundColors = labels.map((_, i) => {
+            const colors = ['#3b82f6', '#10b981', '#ef4444', '#f59e0b', '#8b5cf6', '#f472b6'];
+            return colors[i % colors.length];
+        });
+        if (window.tagDownloadChart instanceof Chart) {
+            window.tagDownloadChart.destroy();
+        }
+        window.tagDownloadChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Downloads',
+                    data: downloadCounts,
+                    backgroundColor: backgroundColors
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+
+    function refreshTagPerformanceCharts() {
+        fetchTagPerformance().then(data => {
+            createTagUploadChart(data);
+            createTagDownloadChart(data);
+        });
+    }
+
+
+    function fetchHistoricalHealth() {
+        return fetch("{{ url_for('analytics_system_health_historical') }}")
+            .then(response => response.json())
+            .catch(error => { console.error("Error fetching historical system health:", error); return []; });
+    }
+    function createHistoricalHealthChart(data) {
+        const ctx = document.getElementById("historicalHealthChart").getContext("2d");
+        const labels = data.map(item => new Date(item.timestamp).toLocaleTimeString());
+        const cpuData = data.map(item => item.cpu_usage);
+        const memData = data.map(item => item.mem_usage);
+        const chartData = {
+            labels: labels,
+            datasets: [
+                { label: 'CPU Usage', data: cpuData, borderColor: '#3b82f6', fill: false },
+                { label: 'Memory Usage', data: memData, borderColor: '#10b981', fill: false }
+            ]
+        };
+        if (window.historicalHealthChart instanceof Chart) {
+            window.historicalHealthChart.destroy();
+        }
+        window.historicalHealthChart = new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom' } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function refreshHistoricalHealthChart() {
+        fetchHistoricalHealth().then(data => { createHistoricalHealthChart(data); });
+    }
+
+    function fetchVisitorDemographics() {
+        return fetch("{{ url_for('analytics_visitor_demographics') }}" + "?period=" + document.getElementById("visitorAnalyticsPeriod").value)
+            .then(response => response.json())
+            .catch(error => { console.error("Error fetching visitor demographics:", error); return {}; });
+    }
+    function createVisitorDemographicsChart(data) {
+        const ctx = document.getElementById("visitorDemographicsChart").getContext("2d");
+        if (window.visitorDemographicsChart instanceof Chart) {
+            window.visitorDemographicsChart.destroy();
+        }
+        window.visitorDemographicsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Jumlah Pengunjung',
+                    data: data.counts,
+                    backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y', // Horizontal bar chart
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: { beginAtZero: true }
+                }
+            }
+        });
+    }
+
+    function refreshVisitorDemographicsChart() {
+        fetchVisitorDemographics().then(data => { createVisitorDemographicsChart(data); });
+    }
+
+    function fetchSearchTrends() {
+        return fetch("{{ url_for('analytics_search_trends') }}")
+            .then(response => response.json())
+            .catch(error => { console.error("Error fetching search trends:", error); return {}; });
+    }
+    function createSearchTrendsChart(data) {
+        const ctx = document.getElementById("searchTrendsChart").getContext("2d");
+        const labels = Object.keys(data);
+        const counts = Object.values(data);
+        const chartData = {
+            labels: labels,
+            datasets: [{
+                label: "Search Frequency",
+                data: counts,
+                backgroundColor: labels.map((_, i) => {
+                    const colors = ['#3b82f6', '#10b981', '#ef4444', '#f59e0b', '#8b5cf6', '#f472b6'];
+                    return colors[i % colors.length];
+                })
+            }]
+        };
+        if (window.searchTrendsChart instanceof Chart) { window.searchTrendsChart.destroy(); }
+        window.searchTrendsChart = new Chart(ctx, { type: 'bar', data: chartData, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } } });
+    }
+    function refreshSearchTrendsChart() {
+        fetchSearchTrends().then(data => { createSearchTrendsChart(data); });
+    }
+
+    function fetchVisitorCount() {
+        return fetch("{{ url_for('analytics_visitor_count') }}" + "?period=" + document.getElementById("visitorAnalyticsPeriod").value)
+            .then(response => response.json())
+            .catch(error => { console.error("Error fetching visitor count:", error); return { labels: [], counts: [] }; });
+    }
+
+    function createVisitorCountChart(data) {
+        const ctx = document.getElementById("visitorCountChart").getContext("2d");
+        const chartData = {
+            labels: data.labels,
+            datasets: [{
+                label: 'Visitor Count',
+                data: data.counts,
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59,130,246,0.3)',
+                fill: true,
+                tension: 0.4
+            }]
+        };
+        if (window.visitorCountChart instanceof Chart) {
+            window.visitorCountChart.destroy();
+        }
+        window.visitorCountChart = new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { autoSkip: false } },
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+
+
+    function refreshVisitorCountChart() {
+        fetchVisitorCount().then(data => {
+            createVisitorCountChart(data);
+        });
+    }
+
+    // ----- Enhanced Access Control Stats -----
+    function fetchAccessControlStats() {
+        return fetch("{{ url_for('analytics_access_control') }}")
+            .then(response => response.json())
+            .catch(error => { console.error("Error fetching access control stats:", error); return { success_count: 0, failure_count: 0, attempts: [] }; });
+    }
+
+    function refreshAccessControlStats() {
+        fetchAccessControlStats().then(data => {
+            document.getElementById("successful-logins").textContent = data.success_count;
+            document.getElementById("failed-logins").textContent = data.failure_count;
+
+            const list = document.getElementById("login-attempts-list");
+            list.innerHTML = "";
+            data.attempts.forEach(attempt => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+        <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-300">${attempt.user_email}</td>
+        <td class="px-4 py-2 text-sm ${attempt.success ? 'text-green-600' : 'text-red-600'}">${attempt.success ? 'Success' : 'Failure'}</td>
+        <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-300">${attempt.ip_address}</td>
+        <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-300">${new Date(attempt.timestamp).toLocaleString()}</td>
+      `;
+                list.appendChild(tr);
+            });
+        });
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+        fetchDashboardAnalytics();
+        refreshTrendChartDashboard();
+        refreshFilesByTypeChart();
+        refreshFilesByTagChart();
+        refreshStorageUsageChart();
+        refreshHistoricalHealthChart();
+        refreshVisitorDemographicsChart();
+        refreshSearchTrendsChart();
+        refreshVisitorCountChart();
+        refreshAccessControlStats();
+        refreshTagPerformanceCharts();
+        document.getElementById("visitorAnalyticsPeriod").addEventListener("change", refreshVisitorCountChart);
+        document.getElementById("trendPeriod").addEventListener("change", refreshTrendChartDashboard);
+        document.getElementById("typePeriod").addEventListener("change", refreshFilesByTypeChart);
+        document.getElementById("tagPeriod").addEventListener("change", refreshFilesByTagChart);
+        document.getElementById("tagPerformancePeriod").addEventListener("change", refreshTagPerformanceCharts);
+        document.getElementById("visitorAnalyticsPeriod").addEventListener("change", refreshVisitorDemographicsChart);
+    });
+</script>
+{% endblock %}

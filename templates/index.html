@@ -3,134 +3,436 @@
 {% block title %}File Repository{% endblock %}
 
 {% block content %}
-<h1 class="text-4xl font-bold mb-6 text-gray-800 dark:text-gray-100">File Repository</h1>
+<div class="space-y-6">
+    <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+        <div class="p-6">
+            <button
+                class="w-full px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors duration-300 flex items-center justify-between"
+                onclick="toggleSearchFilters()">
+                <span id="search-filter-text">Tampilkan Filter Pencarian</span>
+                <svg id="filter-arrow" class="w-5 h-5 transform transition-transform duration-300" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+            </button>
 
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow mb-6 transition-colors duration-300">
-    <div class="p-4">
-        <button class="w-full mb-4 px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 transition-colors duration-300" onclick="toggleSearchFilters()">
-            <span id="search-filter-text">Show Search Filters</span>
-        </button>
-        <div id="search-filters" class="hidden">
-            <form method="GET" action="{{ url_for('index') }}" class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <input type="text" name="title" placeholder="Title" class="w-full px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <input type="text" name="author" placeholder="Author Name" class="w-full px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <input type="text" name="nim" placeholder="NIM" class="w-full px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <input type="text" name="university" placeholder="University" class="w-full px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <input type="text" name="study_program" placeholder="Study Program" class="w-full px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <input type="text" name="tags" placeholder="Tags" class="w-full px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <select name="file_type" class="w-full px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                        <option value="">All File Types</option>
-                        <option value="pdf">PDF</option>
-                        <option value="jpg">JPG</option>
-                        <option value="jpeg">JPEG</option>
-                        <option value="png">PNG</option>
-                    </select>
+            <div id="search-filters" class="hidden mt-6 space-y-6 transition-all duration-300">
+                <form method="GET" action="{{ url_for('repository') }}" id="search-filter-form"
+                    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Existing filter fields -->
+
+                    <div>
+                        <label for="judul"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Judul</label>
+                        <input type="text" placeholder="Judul"
+                            class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            id="judul" name="judul" value="{{ query_params.judul }}">
+                    </div>
+                    <div>
+                        <label for="date_from"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal Dari</label>
+                        <input type="date"
+                            class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            id="date_from" name="date_from" value="{{ query_params.date_from }}">
+                    </div>
+                    <div>
+                        <label for="date_to" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal
+                            Sampai</label>
+                        <input type="date"
+                            class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            id="date_to" name="date_to" value="{{ query_params.date_to }}">
+                    </div>
+                    <div>
+                        <label for="nama_penulis"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nama Penulis</label>
+                        <input type="text" placeholder="Nama Penulis"
+                            class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            id="nama_penulis" name="nama_penulis" value="{{ query_params.nama_penulis }}">
+                    </div>
+                    <div>
+                        <label for="nim" class="block text-sm font-medium text-gray-700 dark:text-gray-300">NIM</label>
+                        <input type="text" placeholder="NIM"
+                            class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            id="nim" name="nim" value="{{ query_params.nim }}">
+                    </div>
+                    <div>
+                        <label for="university_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            University
+                        </label>
+                        <input type="text" id="university" name="nama_universitas"
+                            class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700" list="universitiesList">
+                        <datalist id="universitiesList"></datalist>
+                    </div>
+                    <div>
+                        <label for="major"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Prodi</label>
+                        <input type="text" placeholder="Prodi"
+                            class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            id="major" name="major" value="{{ query_params.major }}">
+                    </div>
+                    <div>
+                        <label for="uploaded_by"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Diunggah Oleh</label>
+                        <input type="text" placeholder="Diunggah Oleh"
+                            class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            id="uploaded_by" name="uploaded_by" value="{{ query_params.uploaded_by }}">
+                    </div>
+                    <div>
+                        <label for="file_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipe
+                            File</label>
+                        <select
+                            class="form-select w-full px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            id="file_type" name="file_type">
+                            <option value="">Semua Tipe File</option>
+                            <option value="pdf" {% if query_params.file_type=='pdf' %}selected{% endif %}>PDF</option>
+                            <option value="docx" {% if query_params.file_type=='docx' %}selected{% endif %}>DOCX
+                            </option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tag</label>
+                        <select
+                            class="form-select w-full px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            name="tags">
+                            <option value="">Pilih Tag</option>
+                            {% for tag in ["Tesis", "Disertasi", "Laporan Penelitian", "Jurnal", "Makalah", "Proposal", "PKL", "Skripsi"]
+                            %}
+                            <option value="{{ tag }}" {% if tag in query_params.tags %}selected{% endif %}>{{ tag }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+
+                    {% if current_user.is_authenticated %}
+                    <div>
+                        <label for="uploaded_by_self"
+                            class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Diunggah Oleh
+                            Saya</label>
+                        <input type="checkbox" id="uploaded_by_self" name="uploaded_by_self" value="1" {% if
+                            query_params.uploaded_by_self=='1' %}checked{% endif %}
+                            class="form-checkbox h-5 w-5 text-primary-600">
+                    </div>
+                    {% endif %}
+
+                    <div class="col-span-full flex flex-row items-center gap-2 justify-end">
+                        <button type="button" onclick="openSearchCaptchaModal()"
+                            class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors duration-300">
+                            Cari
+                        </button>
+                        <button type="button" onclick="resetAndSearch()"
+                            class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-700 transition-colors duration-300">
+                            Reset
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden transition-colors duration-300">
+        <div class="overflow-x-auto md:overflow-visible">
+            <table class="min-w-full table-fixed divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                        <!-- New column for numbering -->
+                        <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider w-10">
+                            No.
+                        </th>
+                        {% set sort_column = request.args.get('sort', 'upload_date') %}
+                        {% set sort_order = request.args.get('order', 'desc') %}
+    
+                        <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider w-32">
+                            <a href="javascript:void(0);" onclick="sortTable('upload_date')">
+                                Tanggal Upload
+                                <span class="sort-icon" data-column="upload_date"></span>
+                            </a>
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider w-40">
+                            <a href="javascript:void(0);" onclick="sortTable('nama_penulis')">
+                                Penulis
+                                <span class="sort-icon" data-column="nama_penulis"></span>
+                            </a>
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider w-24">
+                            <a href="javascript:void(0);" onclick="sortTable('nim')">
+                                NIM
+                                <span class="sort-icon" data-column="nim"></span>
+                            </a>
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider w-40">
+                            <a href="javascript:void(0);" onclick="sortTable('university_name')">
+                                Universitas
+                                <span class="sort-icon" data-column="university_name"></span>
+                            </a>
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider w-40">
+                            <a href="javascript:void(0);" onclick="sortTable('major')">
+                                Prodi
+                                <span class="sort-icon" data-column="major"></span>
+                            </a>
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider w-56">
+                            <a href="javascript:void(0);" onclick="sortTable('judul')">
+                                Judul
+                                <span class="sort-icon" data-column="judul"></span>
+                            </a>
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider w-40">
+                            <a href="javascript:void(0);" onclick="sortTable('tags')">
+                                Kategori
+                                <span class="sort-icon" data-column="tags"></span>
+                            </a>
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider w-40">
+                            Aksi
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                    {% set row_number = (pagination.page - 1) * pagination.per_page %}
+                    {% for file in pagination.items %}
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                        <!-- Numbering column: using loop.index to start numbering at 1 -->
+                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">
+                            {{ row_number + loop.index }}
+                        </td>
+                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">
+                            {{ file.upload_date.strftime('%Y-%m-%d') }}
+                        </td>
+                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">
+                            {{ file.nama_penulis }}
+                        </td>
+                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">
+                            {{ file.nim }}
+                        </td>
+                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">
+                            {{ file.university_name }}
+                        </td>
+                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">
+                            {{ file.major }}
+                        </td>
+                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-md">
+                            {{ file.judul }}
+                        </td>
+                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">
+                            {{ file.tags }}
+                        </td>
+                        <td class="px-4 py-4 text-sm font-medium">
+                            <button onclick="window.location.href='{{ url_for('download_file', file_id=file.id) }}'"
+                                class="px-3 py-1 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors duration-300 w-full">
+                                Download
+                            </button>
+                            <div class="flex gap-2 w-full mt-2">
+                                {% if current_user.is_authenticated and current_user.id == file.user_id %}
+                                <form action="{{ url_for('delete_file', file_id=file.id) }}" method="POST"
+                                    class="flex-1"
+                                    onsubmit="return confirm('Are you sure you want to delete this file?');">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit"
+                                        class="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-300 w-full">
+                                        Hapus
+                                    </button>
+                                </form>
+                                {% endif %}
+                                <button class="px-3 py-1 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors duration-300 flex-1"
+                                    onclick="showFileDetails('{{ file.id }}')">
+                                    Detail
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+
+    <!-- Pagination -->
+    <div class="flex justify-center items-center space-x-3 mt-4">
+        <!-- Items per page dropdown -->
+        <div>
+            <label for="per_page">Per Halaman </label>
+            <select name="per_page" id="per_page"
+                class="ml-1 px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                <option value="10" {% if query_params.per_page=='10' %}selected{% endif %}>10</option>
+                <option value="20" {% if query_params.per_page=='20' %}selected{% endif %}>20</option>
+                <option value="50" {% if query_params.per_page=='50' %}selected{% endif %}>50</option>
+                <option value="100" {% if query_params.per_page=='100' %}selected{% endif %}>100</option>
+            </select>
+        </div>
+
+        <!-- Previous button -->
+        {% if pagination.pages > 1 %}
+        {% if pagination.has_prev %}
+        <a href="{{ url_for('repository', page=pagination.prev_num, per_page=query_params.per_page) }}"
+            class="px-3 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors duration-300">
+            Sebelumnya
+        </a>
+        {% endif %}
+        {% endif %}
+
+        <!-- Page number -->
+        <span class="px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            Halaman {{ pagination.page }} Dari {{ pagination.pages if pagination.pages > 0 else 1 }}
+        </span>
+
+        <!-- Next button -->
+        {% if pagination.pages > 1 %}
+        {% if pagination.has_next %}
+        <a href="{{ url_for('repository', page=pagination.next_num, per_page=query_params.per_page) }}"
+            class="px-3 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors duration-300">
+            Selanjutnya
+        </a>
+        {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+<!-- File Detail Modal -->
+<div id="file-detail-modal"
+    class="modal mt-6 opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center">
+    <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+    <div
+        class="modal-container bg-white dark:bg-gray-800 w-11/12 md:max-w-2xl mx-auto rounded shadow-lg z-50 overflow-y-auto max-h-[90vh]">
+        <div class="modal-content py-4 text-left px-6">
+            <div class="flex justify-between items-center pb-3">
+                <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">Detail File</p>
+                <div class="modal-close cursor-pointer z-50" onclick="toggleModal('file-detail-modal')">
+                    <svg class="fill-current text-black dark:text-white" xmlns="http://www.w3.org/2000/svg" width="18"
+                        height="18" viewBox="0 0 18 18">
+                        <path
+                            d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z">
+                        </path>
+                    </svg>
                 </div>
-                <button type="submit" class="w-full px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 transition-colors duration-300">Search</button>
-            </form>
+            </div>
+            <div id="file-details" class="my-5 text-gray-600 dark:text-gray-400">
+                <!-- File details will be populated here -->
+            </div>
+            <div class="flex justify-end pt-2">
+                <button class="modal-close px-4 bg-primary-500 p-3 rounded-lg text-white hover:bg-primary-400"
+                    onclick="toggleModal('file-detail-modal')">Tutup</button>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden transition-colors duration-300">
-    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-        <thead class="bg-gray-50 dark:bg-gray-700">
-            <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Upload Date</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Author</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">NIM</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">University</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Study Program</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Title</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Tags</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
-            </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-            {% for file in files %}
-            <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ file.upload_date.strftime('%Y-%m-%d') }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ file.author }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ file.nim }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ file.university }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ file.study_program }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ file.title }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ file.tags }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <a href="{{ url_for('download_file', file_id=file.id) }}" class="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300 mr-2">Download</a>
-                    {% if current_user.id == file.uploaded_by %}
-                    <a href="{{ url_for('delete_file', file_id=file.id) }}" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 mr-2" onclick="return confirm('Are you sure you want to delete this file?')">Delete</a>
-                    {% endif %}
-                    <button class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300" onclick="showFileDetails({{ file.id }})">Details</button>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<!-- Search CAPTCHA Modal -->
+<div id="search-captcha-modal" class="modal fixed z-50 inset-0 overflow-y-auto hidden">
+    <div class="flex items-center justify-center min-h-screen">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded shadow-lg w-96">
+            <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">Dimohon mengisi CAPTCHA</h2>
+            <div class="flex items-center space-x-2 mb-4">
+                <img id="search-captcha-image" src="data:image/png;base64,{{ search_captcha_image }}" alt="CAPTCHA"
+                    class="w-32 h-12">
+                <button type="button" onclick="reloadSearchCaptcha()" class="ml-2 text-blue-600 hover:underline">Muat
+                    Ulang</button>
+            </div>
+            <input type="text" id="search-captcha-input"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                placeholder="Enter CAPTCHA">
+            <div id="search-captcha-error" class="text-red-500 mt-2 text-sm"></div>
+            <div class="flex justify-end space-x-2 mt-4">
+                <button type="button" onclick="closeSearchCaptchaModal()"
+                    class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-300">Batal</button>
+                <button type="button" onclick="submitSearchCaptcha()"
+                    class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors duration-300">Konfirmasi</button>
+            </div>
+        </div>
+    </div>
 </div>
 
-<!-- File Upload Modal -->
-<div id="upload-modal" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center">
+<!-- Upload Modal (visible only if logged in) -->
+<div id="upload-modal"
+    class="modal mt-6 opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center">
     <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
-    
-    <div class="modal-container bg-white dark:bg-gray-800 w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto max-h-[90vh]">
+    <div
+        class="modal-container bg-white dark:bg-gray-800 w-11/12 md:max-w-2xl mx-auto rounded shadow-lg z-50 overflow-y-auto max-h-[90vh]">
         <div class="modal-content py-4 text-left px-6">
             <div class="flex justify-between items-center pb-3">
-                <p class="text-xl font-bold text-gray-900 dark:text-gray-100">Upload File</p>
                 <div class="modal-close cursor-pointer z-50" onclick="toggleModal('upload-modal')">
-                    <svg class="fill-current text-black dark:text-white" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
-                        <path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path>
+                    <svg class="fill-current text-black dark:text-white" xmlns="http://www.w3.org/2000/svg" width="18"
+                        height="18" viewBox="0 0 18 18">
+                        <path
+                            d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z">
+                        </path>
                     </svg>
                 </div>
             </div>
 
-            <form action="{{ url_for('upload_file') }}" method="POST" enctype="multipart/form-data" class="space-y-3">
+            <form action="{{ url_for('upload_file') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                <h2 class="text-2xl font-bold mb-2 text-gray-700 dark:text-gray-300">Unggah File</h2>
+                <p class="text-gray-700 mb-4 dark:text-gray-300">File Harus Dalam Format .pdf or .docx</p>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div id="drop-zone" class="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-md
+         hover:bg-gray-50 transition-colors cursor-pointer" onclick="document.getElementById('file-input').click()">
+                    <svg class="h-12 w-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            d="M3 7l1.664-2A2 2 0 0 1 6.266 4h3.47a2 2 0 0 1 1.414.586l1.164 1.164A2 2 0 0 0 13.728 6h4.54A2 2 0 0 1 20 8v8.4A1.6 1.6 0 0 1 18.4 18H5.6A1.6 1.6 0 0 1 4 16.4V7z" />
+                    </svg>
+                    <p class="text-gray-500">Tarik dan letakan Atau Klik Untuk Mencari</p>
+                </div>
+                <input type="file" name="file" id="file-input" class="hidden" accept=".pdf,.docx,.jpg,.jpeg,.png"
+                    required />
                 <div>
-                    <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-1" for="file">
-                        File
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="judul">
+                        Judul
                     </label>
-                    <input class="shadow appearance-none border rounded w-full py-1 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline text-sm dark:bg-gray-700 dark:border-gray-600" id="file" name="file" type="file" accept=".pdf,.jpg,.jpeg,.png" required>
+                    <input
+                        class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        id="judul" name="judul" type="text" placeholder="Judul" required>
                 </div>
                 <div>
-                    <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-1" for="title">
-                        Title
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="nama_penulis">
+                        Penulis
                     </label>
-                    <input class="shadow appearance-none border rounded w-full py-1 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline text-sm dark:bg-gray-700 dark:border-gray-600" id="title" name="title" type="text" placeholder="Title" required>
+                    <input
+                        class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        id="nama_penulis" name="nama_penulis" type="text" placeholder="Penulis" required>
                 </div>
                 <div>
-                    <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-1" for="author">
-                        Author Name
-                    </label>
-                    <input class="shadow appearance-none border rounded w-full py-1 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline text-sm dark:bg-gray-700 dark:border-gray-600" id="author" name="author" type="text" placeholder="Author Name" required>
-                </div>
-                <div>
-                    <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-1" for="nim">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="nim">
                         NIM
                     </label>
-                    <input class="shadow appearance-none border rounded w-full py-1 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline text-sm dark:bg-gray-700 dark:border-gray-600" id="nim" name="nim" type="text" placeholder="NIM">
+                    <input
+                        class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        id="nim" name="nim" type="text" placeholder="NIM" required>
                 </div>
                 <div>
-                    <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-1" for="university">
-                        University
-                    </label>
-                    <input class="shadow appearance-none border rounded w-full py-1 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline text-sm dark:bg-gray-700 dark:border-gray-600" id="university" name="university" type="text" placeholder="University">
+                    <label class="block mb-2">University</label>
+                    <input type="text" id="university" name="nama_universitas"
+                        class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700" list="universitiesList">
+                    <datalist id="universitiesList"></datalist>
                 </div>
                 <div>
-                    <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-1" for="study_program">
-                        Study Program
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="prodi">
+                        Prodi
                     </label>
-                    <input class="shadow appearance-none border rounded w-full py-1 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline text-sm dark:bg-gray-700 dark:border-gray-600" id="study_program" name="study_program" type="text" placeholder="Study Program">
+                    <input
+                        class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        id="prodi" name="prodi" type="text" placeholder="Prodi" required>
                 </div>
                 <div>
-                    <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-1" for="tags">
-                        Tags
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="tags">
+                        Kategori
                     </label>
-                    <input class="shadow appearance-none border rounded w-full py-1 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline text-sm dark:bg-gray-700 dark:border-gray-600" id="tags" name="tags" type="text" placeholder="Tags (comma-separated)">
+                    <select
+                        class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        id="tags" name="tags" required>
+                        <option value="">Pilih Kategori</option>
+                        {% for tag in ["Tesis", "Disertasi", "Laporan Penelitian", "Jurnal", "Makalah", "Proposal"] %}
+                        <option value="{{ tag }}" {% if tag in query_params.tags %}selected{% endif %}>{{ tag }}
+                        </option>
+                        {% endfor %}
+                    </select>
                 </div>
                 <div class="flex items-center justify-end">
-                    <button class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-1 px-4 rounded focus:outline-none focus:shadow-outline text-sm transition-colors duration-300" type="submit">
-                        Upload
+                    <button
+                        class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors duration-300"
+                        type="submit">
+                        Unggah
                     </button>
                 </div>
             </form>
@@ -138,59 +440,238 @@
     </div>
 </div>
 
-<!-- File Detail Modal -->
-<div id="file-detail-modal" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center">
-    <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
-    
-    <div class="modal-container bg-white dark:bg-gray-800 w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
-        <div class="modal-content py-4 text-left px-6">
-            <div class="flex justify-between items-center pb-3">
-                <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">File Details</p>
-                <div class="modal-close cursor-pointer z-50" onclick="toggleModal('file-detail-modal')">
-                    <svg class="fill-current text-black dark:text-white" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
-                        <path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path>
-                    </svg>
-                </div>
-            </div>
-
-            <div id="file-details" class="my-5 text-gray-600 dark:text-gray-400">
-                <!-- File details will be populated here -->
-            </div>
-
-            <div class="flex justify-end pt-2">
-                <button class="modal-close px-4 bg-primary-500 p-3 rounded-lg text-white hover:bg-primary-400" onclick="toggleModal('file-detail-modal')">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
 {% endblock %}
 
 {% block scripts %}
 {{ super() }}
 <script>
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+
+    // Store the initial drop zone HTML
+    const originalDropZoneHTML = dropZone.innerHTML;
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentSort = urlParams.get("sort") || "upload_date";
+        const currentOrder = urlParams.get("order") || "desc";
+
+        // Set the sorting arrow based on the current order
+        const sortIcons = document.querySelectorAll(".sort-icon");
+        sortIcons.forEach(icon => {
+            const column = icon.getAttribute("data-column");
+            if (column === currentSort) {
+                icon.innerHTML = currentOrder === "asc" ? " ▲" : " ▼";
+            }
+        });
+    });
+
+    function sortTable(column) {
+        const url = new URL(window.location.href);
+        const currentSort = url.searchParams.get("sort");
+        const currentOrder = url.searchParams.get("order");
+
+        if (currentSort === column) {
+            url.searchParams.set("order", currentOrder === "asc" ? "desc" : "asc");
+        } else {
+            url.searchParams.set("sort", column);
+            url.searchParams.set("order", "asc");
+        }
+
+        window.location.href = url.toString();
+    }
+
+    // Reassign event handlers after resetting the drop zone
+    function setDropZoneEvents() {
+        // Onclick for the entire dropZone
+        dropZone.onclick = () => fileInput.click();
+
+        // Drag over
+        dropZone.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dropZone.classList.add('bg-gray-50');
+        });
+
+        // Drag leave
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('bg-gray-50');
+        });
+
+        // Drop
+        dropZone.addEventListener('drop', (event) => {
+            event.preventDefault();
+            dropZone.classList.remove('bg-gray-50');
+            if (event.dataTransfer.files.length) {
+                fileInput.files = event.dataTransfer.files;
+                showSelectedFile();
+            }
+        });
+    }
+
+    // Reset the drop zone to the original prompt
+    function revertDropZone() {
+        // Clear dropZone content and restore original HTML
+        dropZone.innerHTML = originalDropZoneHTML;
+        dropZone.classList.remove('bg-gray-50');
+        // Re-bind all event handlers
+        setDropZoneEvents();
+    }
+
+    // Show the selected file UI
+    function showSelectedFile() {
+        if (fileInput.files.length > 0) {
+            const fileName = fileInput.files[0].name;
+            dropZone.innerHTML = `
+        <div
+          class="w-full p-4 bg-gray-100 border-2 border-gray-300 rounded-md flex items-center justify-between"
+        >
+          <p class="text-gray-700 font-semibold">
+            Selected File: ${fileName}
+          </p>
+          <button
+            type="button"
+            class="text-red-600 hover:text-red-800 font-medium"
+            onclick="removeSelectedFile()"
+          >
+            Remove
+          </button>
+        </div>
+      `;
+        } else {
+            revertDropZone();
+        }
+    }
+
+    // Clear the file input and revert the drop zone
+    function removeSelectedFile() {
+        fileInput.value = ''; // Clear the file input
+        revertDropZone();
+    }
+
+    // Update UI if the user selects a file via the file dialog
+    fileInput.addEventListener('change', showSelectedFile);
+
+    // Initialize the drop zone event listeners on page load
+    setDropZoneEvents();
+
     function toggleSearchFilters() {
         const filters = document.getElementById('search-filters');
         const buttonText = document.getElementById('search-filter-text');
         if (filters.classList.contains('hidden')) {
             filters.classList.remove('hidden');
-            buttonText.textContent = 'Hide Search Filters';
+            buttonText.textContent = 'Sembunyikan Filter Pencarian';
         } else {
             filters.classList.add('hidden');
-            buttonText.textContent = 'Show Search Filters';
+            buttonText.textContent = 'Tampilkan Filter Pencarian';
         }
     }
 
-    function toggleModal(modalID){
+    function toggleModal(modalID) {
         const modal = document.getElementById(modalID);
         modal.classList.toggle('opacity-0');
         modal.classList.toggle('pointer-events-none');
         document.body.classList.toggle('modal-active');
     }
 
-    function showFileDetails(fileId) {
-        fetch(`/file/${fileId}`)
+    function reloadSearchCaptcha() {
+        fetch('/reload_search_captcha')
             .then(response => response.json())
             .then(data => {
+                document.getElementById('search-captcha-image').src = 'data:image/png;base64,' + data.captcha_image;
+            })
+            .catch(error => {
+                console.error('Error reloading captcha:', error);
+            });
+    }
+
+    function openSearchCaptchaModal() {
+        // Reload the captcha each time the modal is opened
+        reloadSearchCaptcha();
+        document.getElementById('search-captcha-modal').classList.remove('hidden');
+    }
+
+    function closeSearchCaptchaModal() {
+        document.getElementById('search-captcha-modal').classList.add('hidden');
+        document.getElementById('search-captcha-error').innerText = '';
+        document.getElementById('search-captcha-input').value = '';
+    }
+
+    function submitSearchCaptcha() {
+        const captchaValue = document.getElementById('search-captcha-input').value;
+        fetch('/verify_search_captcha', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ captcha: captchaValue })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    closeSearchCaptchaModal();
+                    document.getElementById('search-filter-form').submit();
+                } else {
+                    document.getElementById('search-captcha-error').innerText = 'Invalid CAPTCHA. Please try again.';
+                }
+            })
+            .catch(error => {
+                console.error('Error verifying search captcha:', error);
+                document.getElementById('search-captcha-error').innerText = 'Error verifying CAPTCHA.';
+            });
+    }
+
+    function resetAndSearch() {
+        const form = document.getElementById("search-filter-form");
+        form.reset();
+
+        // Clear all query parameters
+        const urlWithoutParams = window.location.href.split('?')[0];
+        history.pushState({}, '', urlWithoutParams);
+
+        // Trigger a search with empty parameters
+        fetchSearchResults();
+    }
+
+    function fetchSearchResults() {
+        const form = document.getElementById("search-filter-form");
+        const formData = new FormData(form);
+        const searchParams = new URLSearchParams(formData);
+
+        fetch(`${window.location.pathname}?${searchParams.toString()}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newContent = doc.querySelector('.space-y-6');
+                document.querySelector('.space-y-6').innerHTML = newContent.innerHTML;
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    // Add event listener to the form
+    document.getElementById("search-filter-form").addEventListener("submit", function (e) {
+        e.preventDefault();
+        fetchSearchResults();
+    });
+
+    function showFileDetails(fileId) {
+        fetch(`/file-details/${fileId}`)
+            .then(response => response.json())
+            .then(data => {
+                let previewHtml = '';
+                if (data.file_type === 'pdf') {
+                    previewHtml = `<embed src="/preview/${fileId}" type="application/pdf" width="100%" height="300px">`;
+                } else if (['jpg', 'jpeg', 'png', 'gif'].includes(data.file_type)) {
+                    previewHtml = `<img src="/preview/${fileId}" alt="Image preview" class="img-fluid">`;
+                } else if (data.file_type === 'docx') {
+                    previewHtml = `<iframe src="/preview/${fileId}" style="width: 100%; height: 600px; border: none; background-color: white;"></iframe>`;
+                } else {
+                    previewHtml = `<p>Cannot load preview for this file type.</p>`;
+                }
                 const detailsContainer = document.getElementById('file-details');
                 detailsContainer.innerHTML = `
                     <p><strong>Title:</strong> ${data.title}</p>
@@ -203,16 +684,37 @@
                     <p><strong>File Type:</strong> ${data.file_type}</p>
                     <p><strong>File Size:</strong> ${data.file_size} KB</p>
                     <p><strong>Uploaded By:</strong> ${data.uploaded_by}</p>
-                `;
-                toggleHere's the continuation of the text stream from the cut-off point:
-
-strong> ${data.uploaded_by}</p>
+                    <br>
+                    <h4><strong>Preview</h4>
+                    ${previewHtml}
                 `;
                 toggleModal('file-detail-modal');
             })
             .catch(error => {
                 console.error('Error:', error);
             });
+    }
+
+    document.getElementById("per_page").addEventListener("change", function () {
+        const url = new URL(window.location.href);
+        url.searchParams.set("per_page", this.value);
+        url.searchParams.set("page", 1); // Reset to first page on per_page change
+        window.location.href = url.toString();
+    });
+
+    function sortTable(column) {
+        const url = new URL(window.location.href);
+        const currentSort = url.searchParams.get("sort");
+        const currentOrder = url.searchParams.get("order");
+
+        if (currentSort === column) {
+            url.searchParams.set("order", currentOrder === "asc" ? "desc" : "asc");
+        } else {
+            url.searchParams.set("sort", column);
+            url.searchParams.set("order", "asc");
+        }
+
+        window.location.href = url.toString();
     }
 </script>
 {% endblock %}
