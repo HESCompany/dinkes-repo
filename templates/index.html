@@ -135,9 +135,13 @@
             <table class="min-w-full table-fixed divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-700">
                     <tr>
+                        <!-- New column for numbering -->
+                        <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider w-10">
+                            No.
+                        </th>
                         {% set sort_column = request.args.get('sort', 'upload_date') %}
                         {% set sort_order = request.args.get('order', 'desc') %}
-
+    
                         <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider w-32">
                             <a href="javascript:void(0);" onclick="sortTable('upload_date')">
                                 Tanggal Upload
@@ -186,22 +190,34 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                    {% set row_number = (pagination.page - 1) * pagination.per_page %}
                     {% for file in pagination.items %}
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
-                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">{{
-                            file.upload_date.strftime('%Y-%m-%d') }}</td>
-                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">{{
-                            file.nama_penulis }}</td>
-                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">{{ file.nim
-                            }}</td>
-                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">{{
-                            file.university_name }}</td>
-                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">{{
-                            file.major }}</td>
-                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-md">{{
-                            file.judul }}</td>
-                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">{{ file.tags
-                            }}</td>
+                        <!-- Numbering column: using loop.index to start numbering at 1 -->
+                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">
+                            {{ row_number + loop.index }}
+                        </td>
+                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">
+                            {{ file.upload_date.strftime('%Y-%m-%d') }}
+                        </td>
+                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">
+                            {{ file.nama_penulis }}
+                        </td>
+                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">
+                            {{ file.nim }}
+                        </td>
+                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">
+                            {{ file.university_name }}
+                        </td>
+                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">
+                            {{ file.major }}
+                        </td>
+                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-md">
+                            {{ file.judul }}
+                        </td>
+                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">
+                            {{ file.tags }}
+                        </td>
                         <td class="px-4 py-4 text-sm font-medium">
                             <button onclick="window.location.href='{{ url_for('download_file', file_id=file.id) }}'"
                                 class="px-3 py-1 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors duration-300 w-full">
@@ -214,12 +230,15 @@
                                     onsubmit="return confirm('Are you sure you want to delete this file?');">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <button type="submit"
-                                        class="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-300 w-full">Hapus</button>
+                                        class="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-300 w-full">
+                                        Hapus
+                                    </button>
                                 </form>
                                 {% endif %}
-                                <button
-                                    class="px-3 py-1 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors duration-300 flex-1"
-                                    onclick="showFileDetails('{{ file.id }}')">Detail</button>
+                                <button class="px-3 py-1 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors duration-300 flex-1"
+                                    onclick="showFileDetails('{{ file.id }}')">
+                                    Detail
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -228,6 +247,7 @@
             </table>
         </div>
     </div>
+    
 
     <!-- Pagination -->
     <div class="flex justify-center items-center space-x-3 mt-4">
