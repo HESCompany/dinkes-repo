@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>File Repository & Analytics Web Application Documentation</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; }
+    pre { background-color: #f4f4f4; padding: 10px; border: 1px solid #ddd; }
+    code { background-color: #f4f4f4; padding: 2px 4px; }
+    h1, h2, h3 { color: #333; }
+    a { color: #3498db; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    ul { list-style-type: disc; margin-left: 20px; }
+    ol { margin-left: 20px; }
+  </style>
+</head>
+<body>
+  <h1>File Repository & Analytics Web Application</h1>
+
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#installation">Installation</a></li>
+    <li><a href="#configuration">Configuration</a></li>
+    <li><a href="#database-models">Database Models</a></li>
+    <li><a href="#endpoints-routes">Endpoints & Routes</a></li>
+    <li><a href="#security-authentication">Security & Authentication</a></li>
+    <li><a href="#scheduler-logging">Scheduler & Logging</a></li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#credits">Credits</a></li>
+  </ul>
+
+  <h2 id="overview">Overview</h2>
+  <p>
+    This application is a Flask-based web application that provides a secure file repository with robust analytics, user authentication, and an administration dashboard. It supports file upload, download, preview, search functionality, and comprehensive analytics for system performance, visitor statistics, and file usage.
+  </p>
+
+  <h2 id="features">Features</h2>
+  <ul>
+    <li><strong>User Authentication:</strong> Login, logout, and password reset via OTP sent by email. Role-based access with an admin role to manage files and users.</li>
+    <li><strong>File Management:</strong> Upload files (with file type restrictions), download and preview files (supports PDF, image formats, and DOCX conversion to HTML), edit and delete files with user or admin permissions.</li>
+    <li><strong>Analytics:</strong> File statistics (total files, uploads/download trends), visitor counts, demographics, search trends, system performance tracking, storage usage, and tag performance analytics.</li>
+    <li><strong>Security Measures:</strong> CSRF protection via tokens, CAPTCHA for login and search actions, password hashing with Werkzeug’s security functions, and input validation with role-based access control.</li>
+    <li><strong>Background Scheduling:</strong> Uses APScheduler to periodically log system performance metrics.</li>
+    <li><strong>Email Notifications:</strong> Sends email notifications for password resets, user account creation, updates, and deletions.</li>
+    <li><strong>University List:</strong> Loads and serves a list of universities from a CSV file for enhanced search/filtering.</li>
+  </ul>
+
+  <h2 id="installation">Installation</h2>
+  <ol>
+    <li>
+      <strong>Clone the Repository:</strong>
+      <pre><code>git clone &lt;repository_url&gt;
+cd &lt;repository_directory&gt;</code></pre>
+    </li>
+    <li>
+      <strong>Create a Virtual Environment:</strong>
+      <pre><code>python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate</code></pre>
+    </li>
+    <li>
+      <strong>Install Dependencies:</strong>
+      <pre><code>pip install Flask Flask-SQLAlchemy Flask-Migrate Flask-Login python-dotenv pytz apscheduler psutil captcha python-dateutil pymysql</code></pre>
+    </li>
+    <li>
+      <strong>Set Up the Database:</strong>
+      <pre><code>flask db init
+flask db migrate -m "Initial migration."
+flask db upgrade</code></pre>
+    </li>
+  </ol>
+
+  <h2 id="configuration">Configuration</h2>
+  <p>
+    The application configuration is stored in <code>config.py</code>. Key settings include:
+  </p>
+  <ul>
+    <li><strong>Secret Key:</strong> Used for session management.</li>
+    <li><strong>Database URI:</strong> Set from the <code>DATABASE_URL</code> environment variable with a fallback.</li>
+    <li><strong>File Upload Settings:</strong> <code>UPLOAD_FOLDER</code> defines where uploaded files are stored and <code>ALLOWED_EXTENSIONS</code> limits file types.</li>
+    <li><strong>Email Configuration:</strong> Configures <code>MAIL_SERVER</code>, <code>MAIL_PORT</code>, <code>MAIL_USERNAME</code>, and <code>MAIL_PASSWORD</code> for sending email notifications.</li>
+  </ul>
+  <p>Refer to <a href="config.py">config.py</a> for full details.</p>
+
+  <h2 id="database-models">Database Models</h2>
+  <p>
+    The core data models are defined in <code>models.py</code>:
+  </p>
+  <ul>
+    <li><strong>User:</strong> Represents application users with email, hashed password, role, and tokens for authentication and password resets.</li>
+    <li><strong>File:</strong> Stores metadata for uploaded files (filename, original filename, title, author, university, etc.) along with download counts and upload date.</li>
+    <li><strong>VisitorCounter &amp; VisitorLog:</strong> Used to count site visitors and record visit details (IP address, timestamp).</li>
+    <li><strong>Analytics Models:</strong>
+      <ul>
+        <li><code>LoginAttempt</code>: Logs each login attempt (successful or failed).</li>
+        <li><code>SearchQuery</code>: Stores user search queries.</li>
+        <li><code>PerformanceLog</code>: Records CPU and memory usage over time.</li>
+      </ul>
+    </li>
+  </ul>
+  <p>Refer to <a href="models.py">models.py</a> for a full overview.</p>
+
+  <h2 id="endpoints-routes">Endpoints &amp; Routes</h2>
+  <h3>Public Endpoints</h3>
+  <ul>
+    <li><strong>Landing Page:</strong> <code>/</code> - Displays the landing page.</li>
+    <li><strong>Repository &amp; File Search:</strong> <code>/repository</code> - Lists files with filtering options (title, date, author, university, tags, etc.).</li>
+    <li>
+      <strong>File Download &amp; Preview:</strong>
+      <ul>
+        <li><code>/download/&lt;file_id&gt;</code> - Downloads a file and increments the download counter.</li>
+        <li><code>/preview/&lt;file_id&gt;</code> - Provides an in-browser preview (supports PDF, images, DOCX conversion).</li>
+      </ul>
+    </li>
+    <li><strong>University List:</strong> <code>/universities</code> - Returns a JSON list of universities loaded from a CSV.</li>
+    <li>
+      <strong>Analytics (JSON Endpoints):</strong>  
+      <code>/analytics</code>, <code>/analytics/visitor-count</code>, <code>/analytics/files-by-type</code>, <code>/analytics/files-by-tag</code>, <code>/analytics/storage-usage</code>, <code>/analytics/tag-performance</code>, <code>/analytics/system-health/historical</code>, <code>/analytics/visitor-demographics</code>, <code>/analytics/search-trends</code>, <code>/analytics/access-control</code>
+    </li>
+    <li><strong>Trend Data:</strong> <code>/trend-data</code> - Provides upload/download trends over a selected period.</li>
+  </ul>
+
+  <h3>Authentication &amp; User Management</h3>
+  <ul>
+    <li><strong>Login:</strong> <code>/login</code> - Implements user login with CAPTCHA validation.</li>
+    <li><strong>Logout:</strong> <code>/logout</code> - Logs the user out.</li>
+    <li><strong>Password Reset:</strong> <code>/reset_password</code> and <code>/reset_password_confirm</code> - Implements OTP-based password reset.</li>
+  </ul>
+
+  <h3>Admin-Only Endpoints</h3>
+  <ul>
+    <li>
+      <strong>Admin Dashboard &amp; User Management:</strong>
+      <code>/admin</code>, <code>/admin/create_user</code>, <code>/admin/edit_user/&lt;user_id&gt;</code>, <code>/admin/delete_user/&lt;user_id&gt;</code>
+    </li>
+    <li>
+      <strong>File Management:</strong>
+      <code>/admin/file-management</code>, <code>/admin/create-file</code>, <code>/admin/edit-file/&lt;file_id&gt;</code>, <code>/admin/delete-file/&lt;file_id&gt;</code>
+    </li>
+  </ul>
+
+  <h3>Additional Endpoints</h3>
+  <ul>
+    <li><strong>Captcha Reload:</strong> <code>/reload_captcha</code> and <code>/reload_search_captcha</code> - Refreshes CAPTCHA images.</li>
+    <li><strong>Captcha Verification:</strong> <code>/verify_search_captcha</code> - Verifies the user-entered CAPTCHA for search queries.</li>
+    <li><strong>Credits:</strong> <code>/credits</code> - Displays contributor credits.</li>
+  </ul>
+  <p>Detailed route implementations are in <a href="app.py">app.py</a>.</p>
+
+  <h2 id="security-authentication">Security &amp; Authentication</h2>
+  <ul>
+    <li><strong>Password Management:</strong> User passwords are hashed using Werkzeug's security module.</li>
+    <li><strong>CSRF Protection:</strong> Implemented via tokens generated per session and validated on POST requests.</li>
+    <li><strong>CAPTCHA:</strong> Used during login and file search to prevent automated abuse.</li>
+    <li><strong>Role-Based Access:</strong> Admin-only endpoints are protected by the <code>admin_required</code> decorator.</li>
+  </ul>
+
+  <h2 id="scheduler-logging">Scheduler &amp; Logging</h2>
+  <ul>
+    <li><strong>System Performance Logging:</strong> A background scheduler (APScheduler) logs system health (CPU and memory usage) every five minutes, storing the data in the <code>PerformanceLog</code> model.</li>
+    <li><strong>Visitor Logging:</strong> Each request to non-static endpoints is logged in the <code>VisitorLog</code> model to track visitor IP addresses and timestamps.</li>
+    <li><strong>Application Logging:</strong> Python's logging module captures debug and error information for troubleshooting.</li>
+  </ul>
+
+  <h2 id="usage">Usage</h2>
+  <ol>
+    <li>
+      <strong>Starting the Application:</strong>
+      <pre><code>flask run</code></pre>
+      <p>The application creates the necessary database tables (if not present) and starts background tasks.</p>
+    </li>
+    <li>
+      <strong>Uploading Files:</strong>
+      <p>Log in to your account and use the repository page to upload files. Files are saved in the directory defined by <code>UPLOAD_FOLDER</code> and validated against allowed file types.</p>
+    </li>
+    <li>
+      <strong>Viewing Analytics:</strong>
+      <p>Access analytics endpoints (e.g., <code>/analytics</code>, <code>/analytics/visitor-count</code>) to view real-time and historical data on file uploads/downloads, system health, and user activity.</p>
+    </li>
+    <li>
+      <strong>Admin Operations:</strong>
+      <p>Admin users can manage files and users via dedicated endpoints. Admin routes require proper authentication and an admin password.</p>
+    </li>
+  </ol>
+
+</body>
+</html>

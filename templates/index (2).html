@@ -9,42 +9,37 @@
             <button
                 class="w-full px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors duration-300 flex items-center justify-between"
                 onclick="toggleSearchFilters()">
-                <span id="search-filter-text">Tampilkan Filter Pencarian</span>
+                <span id="search-filter-text">Show Search Filters</span>
                 <svg id="filter-arrow" class="w-5 h-5 transform transition-transform duration-300" fill="none"
                     stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
             </button>
 
-            <div id="search-filters" class="hidden mt-6 space-y-6 transition-all duration-300">
-                <form method="GET" action="{{ url_for('repository') }}" id="search-filter-form"
+            <div id="search-filters"
+                class="hidden mt-6 space-y-6 transition-all duration-300">
+                <form method="GET" action="{{ url_for('index') }}" id="search-filter-form"
                     class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Existing filter fields -->
-
                     <div>
-                        <label for="judul"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Judul</label>
+                        <label for="judul" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Judul</label>
                         <input type="text" placeholder="Judul"
                             class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                             id="judul" name="judul" value="{{ query_params.judul }}">
                     </div>
                     <div>
-                        <label for="date_from"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal Dari</label>
+                        <label for="date_from" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal Dari</label>
                         <input type="date"
                             class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                             id="date_from" name="date_from" value="{{ query_params.date_from }}">
                     </div>
                     <div>
-                        <label for="date_to" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal
-                            Sampai</label>
+                        <label for="date_to" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal Sampai</label>
                         <input type="date"
                             class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                             id="date_to" name="date_to" value="{{ query_params.date_to }}">
                     </div>
                     <div>
-                        <label for="nama_penulis"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nama Penulis</label>
+                        <label for="nama_penulis" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nama Penulis</label>
                         <input type="text" placeholder="Nama Penulis"
                             class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                             id="nama_penulis" name="nama_penulis" value="{{ query_params.nama_penulis }}">
@@ -56,37 +51,33 @@
                             id="nim" name="nim" value="{{ query_params.nim }}">
                     </div>
                     <div>
-                        <label for="university_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            University
-                        </label>
-                        <input type="text" id="university" name="nama_universitas"
-                            class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700" list="universitiesList">
-                        <datalist id="universitiesList"></datalist>
+                        <label for="university_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Universitas</label>
+                        <input type="text" placeholder="Universitas"
+                            class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            id="university_name" name="university_name" value="{{ query_params.university_name }}">
                     </div>
                     <div>
-                        <label for="major"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Prodi</label>
+                        <label for="major" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Prodi</label>
                         <input type="text" placeholder="Prodi"
                             class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                             id="major" name="major" value="{{ query_params.major }}">
                     </div>
                     <div>
-                        <label for="uploaded_by"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Diunggah Oleh</label>
+                        <label for="uploaded_by" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Diunggah Oleh</label>
                         <input type="text" placeholder="Diunggah Oleh"
                             class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                             id="uploaded_by" name="uploaded_by" value="{{ query_params.uploaded_by }}">
                     </div>
                     <div>
-                        <label for="file_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipe
-                            File</label>
+                        <label for="file_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipe File</label>
                         <select
                             class="form-select w-full px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                             id="file_type" name="file_type">
                             <option value="">Semua Tipe File</option>
                             <option value="pdf" {% if query_params.file_type=='pdf' %}selected{% endif %}>PDF</option>
-                            <option value="docx" {% if query_params.file_type=='docx' %}selected{% endif %}>DOCX
-                            </option>
+                            <option value="jpg" {% if query_params.file_type=='jpg' %}selected{% endif %}>JPG</option>
+                            <option value="jpeg" {% if query_params.file_type=='jpeg' %}selected{% endif %}>JPEG</option>
+                            <option value="png" {% if query_params.file_type=='png' %}selected{% endif %}>PNG</option>
                         </select>
                     </div>
                     <div>
@@ -95,33 +86,20 @@
                             class="form-select w-full px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                             name="tags">
                             <option value="">Pilih Tag</option>
-                            {% for tag in ["Tesis", "Disertasi", "Laporan Penelitian", "Jurnal", "Makalah", "Proposal", "PKL", "Skripsi"]
-                            %}
-                            <option value="{{ tag }}" {% if tag in query_params.tags %}selected{% endif %}>{{ tag }}
-                            </option>
+                            {% for tag in ["Tesis", "Disertasi", "Laporan Penelitian", "Jurnal", "Makalah", "Proposal"] %}
+                            <option value="{{ tag }}" {% if tag in query_params.tags %}selected{% endif %}>{{ tag }}</option>
                             {% endfor %}
                         </select>
                     </div>
-
-
-                    {% if current_user.is_authenticated %}
-                    <div>
-                        <label for="uploaded_by_self"
-                            class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Diunggah Oleh
-                            Saya</label>
-                        <input type="checkbox" id="uploaded_by_self" name="uploaded_by_self" value="1" {% if
-                            query_params.uploaded_by_self=='1' %}checked{% endif %}
-                            class="form-checkbox h-5 w-5 text-primary-600">
-                    </div>
-                    {% endif %}
-
                     <div class="col-span-full flex flex-row items-center gap-2 justify-end">
-                        <button type="button" onclick="openSearchCaptchaModal()"
-                            class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors duration-300">
+                        <button type="button"
+                                onclick="openSearchCaptchaModal()"
+                                class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors duration-300">
                             Cari
                         </button>
-                        <button type="button" onclick="resetAndSearch()"
-                            class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-700 transition-colors duration-300">
+                        <button type="button"
+                                onclick="resetAndSearch()"
+                                class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-700 transition-colors duration-300">
                             Reset
                         </button>
                     </div>
@@ -135,73 +113,26 @@
             <table class="min-w-full table-fixed divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-700">
                     <tr>
-                        {% set sort_column = request.args.get('sort', 'upload_date') %}
-                        {% set sort_order = request.args.get('order', 'desc') %}
-
-                        <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider w-32">
-                            <a href="javascript:void(0);" onclick="sortTable('upload_date')">
-                                Tanggal Upload
-                                <span class="sort-icon" data-column="upload_date"></span>
-                            </a>
-                        </th>
-                        <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider w-40">
-                            <a href="javascript:void(0);" onclick="sortTable('nama_penulis')">
-                                Penulis
-                                <span class="sort-icon" data-column="nama_penulis"></span>
-                            </a>
-                        </th>
-                        <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider w-24">
-                            <a href="javascript:void(0);" onclick="sortTable('nim')">
-                                NIM
-                                <span class="sort-icon" data-column="nim"></span>
-                            </a>
-                        </th>
-                        <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider w-40">
-                            <a href="javascript:void(0);" onclick="sortTable('university_name')">
-                                Universitas
-                                <span class="sort-icon" data-column="university_name"></span>
-                            </a>
-                        </th>
-                        <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider w-40">
-                            <a href="javascript:void(0);" onclick="sortTable('major')">
-                                Prodi
-                                <span class="sort-icon" data-column="major"></span>
-                            </a>
-                        </th>
-                        <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider w-56">
-                            <a href="javascript:void(0);" onclick="sortTable('judul')">
-                                Judul
-                                <span class="sort-icon" data-column="judul"></span>
-                            </a>
-                        </th>
-                        <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider w-40">
-                            <a href="javascript:void(0);" onclick="sortTable('tags')">
-                                Kategori
-                                <span class="sort-icon" data-column="tags"></span>
-                            </a>
-                        </th>
-                        <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider w-40">
-                            Aksi
-                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider w-32">Tanggal Upload</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider w-40">Nama Penulis</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider w-24">NIM</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider w-40">Universitas</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider w-40">Prodi</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider w-56">Judul</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider w-40">Tags</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider w-48">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                    {% for file in pagination.items %}
+                    {% for file in files.items %}
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
-                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">{{
-                            file.upload_date.strftime('%Y-%m-%d') }}</td>
-                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">{{
-                            file.nama_penulis }}</td>
-                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">{{ file.nim
-                            }}</td>
-                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">{{
-                            file.university_name }}</td>
-                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">{{
-                            file.major }}</td>
-                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-md">{{
-                            file.judul }}</td>
-                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">{{ file.tags
-                            }}</td>
+                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">{{ file.upload_date.strftime('%Y-%m-%d') }}</td>
+                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">{{ file.nama_penulis }}</td>
+                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">{{ file.nim }}</td>
+                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">{{ file.university_name }}</td>
+                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">{{ file.major }}</td>
+                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-md">{{ file.judul }}</td>
+                        <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 break-words max-w-xs">{{ file.tags }}</td>
                         <td class="px-4 py-4 text-sm font-medium">
                             <button onclick="window.location.href='{{ url_for('download_file', file_id=file.id) }}'"
                                 class="px-3 py-1 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors duration-300 w-full">
@@ -209,17 +140,15 @@
                             </button>
                             <div class="flex gap-2 w-full mt-2">
                                 {% if current_user.is_authenticated and current_user.id == file.user_id %}
-                                <form action="{{ url_for('delete_file', file_id=file.id) }}" method="POST"
-                                    class="flex-1"
-                                    onsubmit="return confirm('Are you sure you want to delete this file?');">
+                                <form action="{{ url_for('delete_file', file_id=file.id) }}" method="POST" class="flex-1" onsubmit="return confirm('Are you sure you want to delete this file?');">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <button type="submit"
-                                        class="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-300 w-full">Hapus</button>
+                                        class="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-300 w-full">Delete</button>
                                 </form>
                                 {% endif %}
                                 <button
                                     class="px-3 py-1 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors duration-300 flex-1"
-                                    onclick="showFileDetails('{{ file.id }}')">Detail</button>
+                                    onclick="showFileDetails('{{ file.id }}')">Details</button>
                             </div>
                         </td>
                     </tr>
@@ -228,57 +157,18 @@
             </table>
         </div>
     </div>
-
-    <!-- Pagination -->
-    <div class="flex justify-center items-center space-x-3 mt-4">
-        <!-- Items per page dropdown -->
-        <div>
-            <label for="per_page">Per Halaman </label>
-            <select name="per_page" id="per_page"
-                class="ml-1 px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                <option value="10" {% if query_params.per_page=='10' %}selected{% endif %}>10</option>
-                <option value="20" {% if query_params.per_page=='20' %}selected{% endif %}>20</option>
-                <option value="50" {% if query_params.per_page=='50' %}selected{% endif %}>50</option>
-                <option value="100" {% if query_params.per_page=='100' %}selected{% endif %}>100</option>
-            </select>
-        </div>
-
-        <!-- Previous button -->
-        {% if pagination.pages > 1 %}
-        {% if pagination.has_prev %}
-        <a href="{{ url_for('repository', page=pagination.prev_num, per_page=query_params.per_page) }}"
-            class="px-3 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors duration-300">
-            Sebelumnya
-        </a>
-        {% endif %}
-        {% endif %}
-
-        <!-- Page number -->
-        <span class="px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            Halaman {{ pagination.page }} Dari {{ pagination.pages if pagination.pages > 0 else 1 }}
-        </span>
-
-        <!-- Next button -->
-        {% if pagination.pages > 1 %}
-        {% if pagination.has_next %}
-        <a href="{{ url_for('repository', page=pagination.next_num, per_page=query_params.per_page) }}"
-            class="px-3 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors duration-300">
-            Selanjutnya
-        </a>
-        {% endif %}
-        {% endif %}
-    </div>
-</div>
+    
+    
 
 <!-- File Detail Modal -->
 <div id="file-detail-modal"
-    class="modal mt-6 opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center">
+    class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center">
     <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
     <div
-        class="modal-container bg-white dark:bg-gray-800 w-11/12 md:max-w-2xl mx-auto rounded shadow-lg z-50 overflow-y-auto max-h-[90vh]">
+        class="modal-container bg-white dark:bg-gray-800 w-11/12 md:max-w-2xl mx-auto rounded shadow-lg z-50 overflow-y-auto">
         <div class="modal-content py-4 text-left px-6">
             <div class="flex justify-between items-center pb-3">
-                <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">Detail File</p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">File Details</p>
                 <div class="modal-close cursor-pointer z-50" onclick="toggleModal('file-detail-modal')">
                     <svg class="fill-current text-black dark:text-white" xmlns="http://www.w3.org/2000/svg" width="18"
                         height="18" viewBox="0 0 18 18">
@@ -293,7 +183,7 @@
             </div>
             <div class="flex justify-end pt-2">
                 <button class="modal-close px-4 bg-primary-500 p-3 rounded-lg text-white hover:bg-primary-400"
-                    onclick="toggleModal('file-detail-modal')">Tutup</button>
+                    onclick="toggleModal('file-detail-modal')">Close</button>
             </div>
         </div>
     </div>
@@ -303,22 +193,20 @@
 <div id="search-captcha-modal" class="modal fixed z-50 inset-0 overflow-y-auto hidden">
     <div class="flex items-center justify-center min-h-screen">
         <div class="bg-white dark:bg-gray-800 p-6 rounded shadow-lg w-96">
-            <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">Dimohon mengisi CAPTCHA</h2>
+            <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">Please verify CAPTCHA</h2>
             <div class="flex items-center space-x-2 mb-4">
                 <img id="search-captcha-image" src="data:image/png;base64,{{ search_captcha_image }}" alt="CAPTCHA"
                     class="w-32 h-12">
-                <button type="button" onclick="reloadSearchCaptcha()" class="ml-2 text-blue-600 hover:underline">Muat
-                    Ulang</button>
+                <button type="button" onclick="reloadSearchCaptcha()"
+                    class="ml-2 text-blue-600 hover:underline">Reload</button>
             </div>
-            <input type="text" id="search-captcha-input"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                placeholder="Enter CAPTCHA">
+            <input type="text" id="search-captcha-input" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Enter CAPTCHA">
             <div id="search-captcha-error" class="text-red-500 mt-2 text-sm"></div>
             <div class="flex justify-end space-x-2 mt-4">
                 <button type="button" onclick="closeSearchCaptchaModal()"
-                    class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-300">Batal</button>
+                    class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-300">Cancel</button>
                 <button type="button" onclick="submitSearchCaptcha()"
-                    class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors duration-300">Konfirmasi</button>
+                    class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors duration-300">Verify</button>
             </div>
         </div>
     </div>
@@ -326,8 +214,9 @@
 
 <!-- Upload Modal (visible only if logged in) -->
 <div id="upload-modal"
-    class="modal mt-6 opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center">
+    class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center">
     <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+
     <div
         class="modal-container bg-white dark:bg-gray-800 w-11/12 md:max-w-2xl mx-auto rounded shadow-lg z-50 overflow-y-auto max-h-[90vh]">
         <div class="modal-content py-4 text-left px-6">
@@ -343,8 +232,8 @@
             </div>
 
             <form action="{{ url_for('upload_file') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
-                <h2 class="text-2xl font-bold mb-2 text-gray-700 dark:text-gray-300">Unggah File</h2>
-                <p class="text-gray-700 mb-4 dark:text-gray-300">File Harus Dalam Format .pdf or .docx</p>
+                <h2 class="text-2xl font-bold mb-2 text-gray-700 dark:text-gray-300">Upload File Anda</h2>
+                <p class="text-gray-700 mb-4 dark:text-gray-300">File harus dalam format .pdf, .jpg, .jpeg, or .png</p>
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div id="drop-zone" class="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-md
          hover:bg-gray-50 transition-colors cursor-pointer" onclick="document.getElementById('file-input').click()">
@@ -352,56 +241,51 @@
                         <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                             d="M3 7l1.664-2A2 2 0 0 1 6.266 4h3.47a2 2 0 0 1 1.414.586l1.164 1.164A2 2 0 0 0 13.728 6h4.54A2 2 0 0 1 20 8v8.4A1.6 1.6 0 0 1 18.4 18H5.6A1.6 1.6 0 0 1 4 16.4V7z" />
                     </svg>
-                    <p class="text-gray-500">Tarik dan letakan Atau Klik Untuk Mencari</p>
+                    <p class="text-gray-500">Drag & Drop your file here or click to browse</p>
                 </div>
-                <input type="file" name="file" id="file-input" class="hidden" accept=".pdf,.docx,.jpg,.jpeg,.png"
-                    required />
+                <input type="file" name="file" id="file-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png" required />
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="judul">
                         Judul
                     </label>
-                    <input
-                        class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                        id="judul" name="judul" type="text" placeholder="Judul" required>
+                    <input class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="judul"
+                        name="judul" type="text" placeholder="Judul" required>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="nama_penulis">
-                        Penulis
+                        Nama Penulis
                     </label>
-                    <input
-                        class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                        id="nama_penulis" name="nama_penulis" type="text" placeholder="Penulis" required>
+                    <input class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        id="nama_penulis" name="nama_penulis" type="text" placeholder="Nama Penulis" required>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="nim">
                         NIM
                     </label>
-                    <input
-                        class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                        id="nim" name="nim" type="text" placeholder="NIM" required>
+                    <input class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="nim"
+                        name="nim" type="text" placeholder="NIM" required>
                 </div>
                 <div>
-                    <label class="block mb-2">University</label>
-                    <input type="text" id="university" name="nama_universitas"
-                        class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700" list="universitiesList">
-                    <datalist id="universitiesList"></datalist>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="nama_universitas">
+                        Universitas
+                    </label>
+                    <input class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        id="nama_universitas" name="nama_universitas" type="text" placeholder="Universitas" required>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="prodi">
                         Prodi
                     </label>
-                    <input
-                        class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                        id="prodi" name="prodi" type="text" placeholder="Prodi" required>
+                    <input class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="prodi"
+                        name="prodi" type="text" placeholder="Prodi" required>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="tags">
-                        Kategori
+                        Tag
                     </label>
-                    <select
-                        class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                        id="tags" name="tags" required>
-                        <option value="">Pilih Kategori</option>
+                    <select class="form-control w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="tags"
+                        name="tags" required>
+                        <option value="">Pilih Tag</option>
                         {% for tag in ["Tesis", "Disertasi", "Laporan Penelitian", "Jurnal", "Makalah", "Proposal"] %}
                         <option value="{{ tag }}" {% if tag in query_params.tags %}selected{% endif %}>{{ tag }}
                         </option>
@@ -412,7 +296,7 @@
                     <button
                         class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors duration-300"
                         type="submit">
-                        Unggah
+                        Upload
                     </button>
                 </div>
             </form>
@@ -421,7 +305,6 @@
 </div>
 
 {% endblock %}
-
 {% block scripts %}
 {{ super() }}
 <script>
@@ -430,36 +313,6 @@
 
     // Store the initial drop zone HTML
     const originalDropZoneHTML = dropZone.innerHTML;
-
-    document.addEventListener("DOMContentLoaded", function () {
-        const urlParams = new URLSearchParams(window.location.search);
-        const currentSort = urlParams.get("sort") || "upload_date";
-        const currentOrder = urlParams.get("order") || "desc";
-
-        // Set the sorting arrow based on the current order
-        const sortIcons = document.querySelectorAll(".sort-icon");
-        sortIcons.forEach(icon => {
-            const column = icon.getAttribute("data-column");
-            if (column === currentSort) {
-                icon.innerHTML = currentOrder === "asc" ? " ▲" : " ▼";
-            }
-        });
-    });
-
-    function sortTable(column) {
-        const url = new URL(window.location.href);
-        const currentSort = url.searchParams.get("sort");
-        const currentOrder = url.searchParams.get("order");
-
-        if (currentSort === column) {
-            url.searchParams.set("order", currentOrder === "asc" ? "desc" : "asc");
-        } else {
-            url.searchParams.set("sort", column);
-            url.searchParams.set("order", "asc");
-        }
-
-        window.location.href = url.toString();
-    }
 
     // Reassign event handlers after resetting the drop zone
     function setDropZoneEvents() {
@@ -539,10 +392,10 @@
         const buttonText = document.getElementById('search-filter-text');
         if (filters.classList.contains('hidden')) {
             filters.classList.remove('hidden');
-            buttonText.textContent = 'Sembunyikan Filter Pencarian';
+            buttonText.textContent = 'Hide Search Filters';
         } else {
             filters.classList.add('hidden');
-            buttonText.textContent = 'Tampilkan Filter Pencarian';
+            buttonText.textContent = 'Show Search Filters';
         }
     }
 
@@ -575,7 +428,6 @@
         document.getElementById('search-captcha-error').innerText = '';
         document.getElementById('search-captcha-input').value = '';
     }
-
     function submitSearchCaptcha() {
         const captchaValue = document.getElementById('search-captcha-input').value;
         fetch('/verify_search_captcha', {
@@ -599,61 +451,30 @@
                 document.getElementById('search-captcha-error').innerText = 'Error verifying CAPTCHA.';
             });
     }
-
     function resetAndSearch() {
-        const form = document.getElementById("search-filter-form");
-        form.reset();
-
-        // Clear all query parameters
-        const urlWithoutParams = window.location.href.split('?')[0];
-        history.pushState({}, '', urlWithoutParams);
-
-        // Trigger a search with empty parameters
-        fetchSearchResults();
-    }
-
-    function fetchSearchResults() {
-        const form = document.getElementById("search-filter-form");
-        const formData = new FormData(form);
-        const searchParams = new URLSearchParams(formData);
-
-        fetch(`${window.location.pathname}?${searchParams.toString()}`, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-            .then(response => response.text())
-            .then(html => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                const newContent = doc.querySelector('.space-y-6');
-                document.querySelector('.space-y-6').innerHTML = newContent.innerHTML;
-            })
-            .catch(error => console.error('Error:', error));
-    }
-
-    // Add event listener to the form
-    document.getElementById("search-filter-form").addEventListener("submit", function (e) {
-        e.preventDefault();
-        fetchSearchResults();
-    });
-
-    function showFileDetails(fileId) {
-        fetch(`/file-details/${fileId}`)
-            .then(response => response.json())
-            .then(data => {
-                let previewHtml = '';
-                if (data.file_type === 'pdf') {
-                    previewHtml = `<embed src="/preview/${fileId}" type="application/pdf" width="100%" height="300px">`;
-                } else if (['jpg', 'jpeg', 'png', 'gif'].includes(data.file_type)) {
-                    previewHtml = `<img src="/preview/${fileId}" alt="Image preview" class="img-fluid">`;
-                } else if (data.file_type === 'docx') {
-                    previewHtml = `<iframe src="/preview/${fileId}" style="width: 100%; height: 600px; border: none; background-color: white;"></iframe>`;
-                } else {
-                    previewHtml = `<p>Cannot load preview for this file type.</p>`;
-                }
-                const detailsContainer = document.getElementById('file-details');
-                detailsContainer.innerHTML = `
+    // Get the form element
+    const form = document.getElementById("search-filter-form");
+    
+    // Reset the form to clear all fields
+    form.reset();
+    
+    // Redirect to the base URL without any query parameters
+    window.location.href = window.location.pathname;
+}
+        function showFileDetails(fileId) {
+            fetch(`/file-details/${fileId}`)
+                .then(response => response.json())
+                .then(data => {
+                    let previewHtml = '';
+                    if (data.file_type === 'pdf') {
+                        previewHtml = `<embed src="/preview/${fileId}" type="application/pdf" width="100%" height="300px">`;
+                    } else if (['jpg', 'jpeg', 'png', 'gif'].includes(data.file_type)) {
+                        previewHtml = `<img src="/preview/${fileId}" alt="Pratinjau gambar" class="img-fluid">`;
+                    } else {
+                        previewHtml = `<p>Tidak dapat memuat pratinjau untuk berkas ini.</p>`;
+                    }
+                    const detailsContainer = document.getElementById('file-details');
+                    detailsContainer.innerHTML = `
                     <p><strong>Title:</strong> ${data.title}</p>
                     <p><strong>Upload Date:</strong> ${data.upload_date}</p>
                     <p><strong>Author:</strong> ${data.author}</p>
@@ -665,36 +486,14 @@
                     <p><strong>File Size:</strong> ${data.file_size} KB</p>
                     <p><strong>Uploaded By:</strong> ${data.uploaded_by}</p>
                     <br>
-                    <h4><strong>Preview</h4>
+                    <h4><strong>Pratinjau</h4>
                     ${previewHtml}
                 `;
-                toggleModal('file-detail-modal');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    }
-
-    document.getElementById("per_page").addEventListener("change", function () {
-        const url = new URL(window.location.href);
-        url.searchParams.set("per_page", this.value);
-        url.searchParams.set("page", 1); // Reset to first page on per_page change
-        window.location.href = url.toString();
-    });
-
-    function sortTable(column) {
-        const url = new URL(window.location.href);
-        const currentSort = url.searchParams.get("sort");
-        const currentOrder = url.searchParams.get("order");
-
-        if (currentSort === column) {
-            url.searchParams.set("order", currentOrder === "asc" ? "desc" : "asc");
-        } else {
-            url.searchParams.set("sort", column);
-            url.searchParams.set("order", "asc");
+                    toggleModal('file-detail-modal');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         }
-
-        window.location.href = url.toString();
-    }
 </script>
 {% endblock %}

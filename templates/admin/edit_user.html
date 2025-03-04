@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Edit User - File Repository{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Edit User</h1>
+
+    <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+        <form action="{{ url_for('edit_user', user_id=user.id) }}" method="POST" class="p-8 space-y-6">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="username">
+                    Username
+                </label>
+                <input class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="username" name="username" type="text" placeholder="Username" value="{{ user.username }}" required>
+            </div>
+            <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="password">
+                    New Password (leave blank to keep current password)
+                </label>
+                <input class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="password" name="password" type="password" placeholder="New Password">
+            </div>
+            <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="role">
+                    Role
+                </label>
+                <select class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="role" name="role" required>
+                    <option value="regular" {% if user.role == 'regular' %}selected{% endif %}>Regular</option>
+                    <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+                </select>
+            </div>
+            <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="secret_key">
+                    Admin Secret Key
+                </label>
+                <input class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="secret_key" name="secret_key" type="password" placeholder="Admin Secret Key" required>
+            </div>
+            <div class="flex items-center justify-between pt-4">
+                <button class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors duration-300" type="submit">
+                    Update User
+                </button>
+                <a class="text-sm font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400" href="{{ url_for('admin_dashboard') }}">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
