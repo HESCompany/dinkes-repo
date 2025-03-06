@@ -1,148 +1,276 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}File Repository{% endblock %}</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        /* Fixed Navbar */
-        .navbar {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-            background-color: #0d6efd; /* Blue color */
+    <title>{% block title %}E-Repository{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { "50": "#eff6ff", "100": "#dbeafe", "200": "#bfdbfe", "300": "#93c5fd", "400": "#60a5fa", "500": "#3b82f6", "600": "#2563eb", "700": "#1d4ed8", "800": "#1e40af", "900": "#1e3a8a", "950": "#172554" }
+                    }
+                },
+                fontFamily: {
+                    'sans': ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'],
+                }
+            }
         }
-        /* Offset content below the fixed navbar */
-        body {
-            padding-top: 70px; /* Adjust based on navbar height */
+    </script>
+    <style>
+        .modal {
+            transition: opacity 0.25s ease;
         }
 
-        .sortable {
-            cursor: pointer;
+        body.modal-active {
+            overflow-x: hidden;
+            overflow-y: visible !important;
         }
-        .sortable::after {
-            content: '\25B2';
-            margin-left: 5px;
-            opacity: 0.5;
-        }
-        .sortable.asc::after {
-            content: '\25B2';
-            opacity: 1;
-        }
-        .sortable.desc::after {
-            content: '\25BC';
-            opacity: 1;
-        }
-        
     </style>
 </head>
-<body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{{ url_for('index') }}">File Repository</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+
+<body
+    class="flex flex-col h-full bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <header class="bg-white dark:bg-gray-800 shadow-md fixed top-0 left-0 right-0 z-50">
+        <nav class="container mx-auto px-6 py-3">
+            <div class="flex justify-between items-center">
+                <a href="{{ url_for('index') }}" class="text-2xl font-bold text-gray-800 dark:text-white">E-Repository</a>
+                <div class="flex items-center space-x-4">
                     {% if current_user.is_authenticated %}
-                        <li class="nav-item">
-                            <span class="nav-link">Hello, {{ current_user.username }}!</span>
-                        </li>
-                        <li class="nav-item">
-                            <button type="button" class="btn btn-light me-2" data-bs-toggle="modal" data-bs-target="#uploadModal">
-                                Upload File
-                            </button>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ url_for('logout') }}" class="btn btn-outline-light">Logout</a>
-                        </li>
+                    <span class="text-sm text-gray-600 dark:text-gray-300">Selamat datang, {{ current_user.email
+                        }}!</span>
+                    {% if request.endpoint == 'admin_dashboard' %}
+                    <a href="{{ url_for('repository') }}"
+                        class="px-3 py-2 text-sm font-medium bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-300">Repository</a>
                     {% else %}
-                        <li class="nav-item">
-                            <a href="{{ url_for('login') }}" class="btn btn-outline-light me-2">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ url_for('register') }}" class="btn btn-outline-light">Register</a>
-                        </li>
+                    <button
+                        class="px-3 py-2 text-sm font-medium bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-300"
+                        onclick="toggleModal('upload-modal')">Unggah File</button>
                     {% endif %}
-                </ul>
+                    {% if current_user.role == 'admin' %}
+                    <a href="{{ url_for('admin_dashboard') }}"
+                        class="px-3 py-2 text-sm font-medium bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors duration-300">Halaman
+                        Pengelola</a>
+                    {% endif %}
+                    <a href="{{ url_for('logout') }}"
+                        class="px-3 py-2 text-sm font-medium bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-300">Keluar</a>
+                    {% else %}
+                    <a href="{{ url_for('login') }}"
+                        class="px-3 py-2 text-sm font-medium bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors duration-300">Masuk</a>
+                    {% endif %}
+                    <button id="theme-toggle"
+                        class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
+                        onclick="toggleTheme()">
+                        <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                        </svg>
+                        <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+                                fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </header>
 
-    <!-- Flash Messages -->
-    <div class="container mt-4">
+    <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-16"> <!-- Added mt-16 for gap -->
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div
+            class="flash-message mb-4 p-4 rounded-lg relative {% if category == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+            <span>{{ message }}</span>
+            <button type="button" class="close-button absolute top-3 right-3 text-xl font-bold"
+                onclick="dismissFlash(this)">×</button>
+        </div>
+        {% endfor %}
+        {% endif %}
         {% endwith %}
-    </div>
 
-    <!-- Main Content -->
-    <main class="container mt-4">
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Upload File Modal -->
-    <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="uploadModalLabel">Upload File</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form method="POST" action="{{ url_for('upload_file') }}" enctype="multipart/form-data">
-                        <div class="mb-3">
-                            <label for="file" class="form-label">File</label>
-                            <input type="file" class="form-control" id="file" name="file" accept=".pdf,.jpg,.jpeg,.png,.gif" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="judul" class="form-label">Judul</label>
-                            <input type="text" class="form-control" id="judul" name="judul" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="nim" class="form-label">NIM</label>
-                            <input type="text" class="form-control" id="nim" name="nim" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="university_name" class="form-label">University Name</label>
-                            <input type="text" class="form-control" id="university_name" name="university_name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="major" class="form-label">Major</label>
-                            <input type="text" class="form-control" id="major" name="major" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="tags" class="form-label">Tags</label>
-                            <select class="form-select" id="tags" name="tags" multiple required>
-                                <option value="Tesis">Tesis</option>
-                                <option value="Disertasi">Disertasi</option>
-                                <option value="Laporan Penelitian">Laporan Penelitian</option>
-                                <option value="Jurnal">Jurnal</option>
-                                <option value="Makalah">Makalah</option>
-                                <option value="Proposal">Proposal</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Upload</button>
-                    </form>
-                </div>
-            </div>
+    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-4 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center">
+            <span class="text-center text-sm text-gray-500 dark:text-gray-400">
+                <a href="{{ url_for('credits') }}" class="hover:text-gray-700 dark:hover:text-gray-200">
+                    &copy;
+                </a> 
+                {{ current_year }} Dinas Kesehatan Kota Semarang. All rights reserved.
+            </span>
         </div>
-    </div>
+    </footer>
+    
 
-    <!-- Bootstrap JS and dependencies -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts %}
+    <script>
+        function dismissFlash(button) {
+            var flashMessage = button.parentElement;
+            flashMessage.style.transition = "opacity 0.5s ease";
+            flashMessage.style.opacity = 0;
+            setTimeout(() => flashMessage.remove(), 500);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            setTimeout(() => {
+                var flashMessages = document.querySelectorAll('.flash-message');
+                flashMessages.forEach(flash => {
+                    flash.style.transition = "opacity 0.5s ease";
+                    flash.style.opacity = 0;
+                    setTimeout(() => flash.remove(), 500);
+                });
+            }, 5000);
+        });
+
+        function toggleTheme() {
+            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('color-theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('color-theme', 'dark');
+            }
+            updateThemeToggleButton();
+        }
+
+        function updateThemeToggleButton() {
+            const darkIcon = document.getElementById('theme-toggle-dark-icon');
+            const lightIcon = document.getElementById('theme-toggle-light-icon');
+
+            if (document.documentElement.classList.contains('dark')) {
+                darkIcon.classList.add('hidden');
+                lightIcon.classList.remove('hidden');
+            } else {
+                lightIcon.classList.add('hidden');
+                darkIcon.classList.remove('hidden');
+            }
+        }
+
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        updateThemeToggleButton();
+
+        function toggleModal(modalID) {
+            const modal = document.getElementById(modalID);
+            modal.classList.toggle('opacity-0');
+            modal.classList.toggle('pointer-events-none');
+            document.body.classList.toggle('modal-active');
+        }
+    </script>
+
+    <!-- Load jQuery & jQuery UI for Autocomplete -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dataList = document.getElementById('universitiesList');
+            const prodiesList = document.getElementById('prodiesList');
+            
+            // Only fetch universities if the datalist exists
+            if (dataList) {
+                fetch('/universities')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (Array.isArray(data)) {
+                            data.forEach(univ => {
+                                let option = document.createElement('option');
+                                option.value = univ;
+                                dataList.appendChild(option);
+                            });
+                        } else {
+                            console.warn('Universities data is not an array:', data);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching universities:', error);
+                        // Add a fallback option if the fetch fails
+                        let option = document.createElement('option');
+                        option.value = "Error loading universities";
+                        dataList.appendChild(option);
+                    });
+            }
+
+            // Handle prodi autocomplete
+            const universityInput = document.querySelector('input[name="nama_universitas"]');
+            const prodiInput = document.querySelector('input[name="prodi"]');
+            
+            if (universityInput && prodiInput && prodiesList) {
+                universityInput.addEventListener('change', function() {
+                    const university = this.value;
+                    
+                    // Clear existing options
+                    while (prodiesList.firstChild) {
+                        prodiesList.removeChild(prodiesList.firstChild);
+                    }
+                    
+                    // Clear the prodi input when university changes
+                    prodiInput.value = '';
+                    
+                    if (university) {
+                        // Show loading state
+                        prodiInput.placeholder = 'Loading prodies...';
+                        prodiInput.disabled = true;
+                        
+                        fetch(`/prodies/${encodeURIComponent(university)}`)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(`HTTP error! status: ${response.status}`);
+                                }
+                                return response.json();
+                            })
+                            .then(prodies => {
+                                // Reset placeholder and enable input
+                                prodiInput.placeholder = 'Select a prodi';
+                                prodiInput.disabled = false;
+                                
+                                if (Array.isArray(prodies) && prodies.length > 0) {
+                                    prodies.forEach(prodi => {
+                                        let option = document.createElement('option');
+                                        option.value = prodi;
+                                        prodiesList.appendChild(option);
+                                    });
+                                } else {
+                                    console.warn('No prodies found for university:', university);
+                                    let option = document.createElement('option');
+                                    option.value = "No prodies available";
+                                    prodiesList.appendChild(option);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error fetching prodies:', error);
+                                prodiInput.placeholder = 'Error loading prodies';
+                                prodiInput.disabled = false;
+                                let option = document.createElement('option');
+                                option.value = "Error loading prodies";
+                                prodiesList.appendChild(option);
+                            });
+                    } else {
+                        prodiInput.placeholder = 'First select a university';
+                    }
+                });
+            }
+        });
+    </script>
+        {% endblock %}
 </body>
-</html>
 
+</html>

@@ -8,4 +8,11 @@ python-dotenv==1.0.0
 gunicorn==20.1.0
 pymysql==1.0.3
 cryptography==41.0.1
-
+captcha==0.6.0
+Flask-Migrate==4.0.4
+mammoth==1.4.19
+apscheduler==3.10.4
+python-dateutil==2.8.2
+psutil==5.9.6
+Flask-Limiter
+redis

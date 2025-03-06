@@ -1,0 +1,779 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to File Repository{% endblock %}
+
+{% block content %}
+<div class="flex flex-col items-center justify-center min-h-[80vh] py-20 px-4 bg-white dark:bg-gray-900">
+    <div class="max-w-4xl w-full text-center space-y-10">
+        <!-- Title with two-tone styling -->
+        <div class="space-y-4">
+            <h1 class="text-6xl font-bold text-gray-900 dark:text-white">
+                E-Repositori
+            </h1>
+            <h2 class="text-5xl font-bold text-blue-600 dark:text-blue-400">
+                Dinas Kesehatan Kota Semarang
+            </h2>
+        </div>
+
+        <!-- Description text -->
+        <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
+            Platform untuk menyimpan, mengelola, dan mengeksplorasi file di Dinas Kesehatan Kota Semarang.
+        </p>
+
+        <!-- Call to action button -->
+        <div class="mt-12">
+            <a href="{{ url_for('repository') }}"
+                class="px-10 py-4 bg-blue-600 text-white rounded-lg text-xl font-medium hover:bg-blue-700 transition shadow-lg hover:shadow-xl">
+                Jelajahi Repositori
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Analytics Dashboard Section -->
+<div class="bg-gray-50 dark:bg-gray-900 py-10 px-4 rounded-xl shadow-md mb-12">
+    <div class="flex justify-between items-center mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard Analitik</h2>
+        <div class="flex items-center">
+            <label for="periodSelector" class="mr-2 text-gray-700 dark:text-gray-300">Periode:</label>
+            <select id="periodSelector"
+                class="rounded border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                <option value="day">1 Hari</option>
+                <option value="week">1 Minggu</option>
+                <option value="month" selected>1 Bulan</option>
+                <option value="year">1 Tahun</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Lists Section: Recent Uploads, Top Downloads, Top Universities, and Top Prodies -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+        <!-- Recent Uploads -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-primary-600" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m4-4v12" />
+                </svg>
+                Dokumen Terbaru
+            </h3>
+            <ul id="new_files_list" class="space-y-2 max-h-60 overflow-y-auto">
+                <li class="p-2 bg-gray-50 dark:bg-gray-700 rounded">Loading...</li>
+            </ul>
+        </div>
+
+        <!-- Top Downloads -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-primary-600" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Top Downloads
+            </h3>
+            <ul id="top_downloads_list" class="space-y-2 max-h-60 overflow-y-auto">
+                <li class="p-2 bg-gray-50 dark:bg-gray-700 rounded">Loading...</li>
+            </ul>
+        </div>
+
+        <!-- Top Universities -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-primary-600" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+                Top Uploader Universitas
+            </h3>
+            <ul id="top_universities_list" class="space-y-2 max-h-60 overflow-y-auto">
+                <li class="p-2 bg-gray-50 dark:bg-gray-700 rounded">Loading...</li>
+            </ul>
+        </div>
+
+        <!-- Top Prodies -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-primary-600" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                Top Uploader Prodi
+            </h3>
+            <ul id="top_prodies_list" class="space-y-2 max-h-60 overflow-y-auto">
+                <li class="p-2 bg-gray-50 dark:bg-gray-700 rounded">Loading...</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="space-y-10">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">Statistik Pengguna & Dokumen</h2>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white text-center mb-4">Dokumen Berdasarkan
+                    Jenis</h3>
+                <div class="h-64">
+                    <canvas id="filesChart"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white text-center mb-4">Dokumen Berdasarkan
+                    Kategori</h3>
+                <div class="h-64">
+                    <canvas id="tagsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trend Data Chart -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white text-center">Trend Dokumen</h3>
+            </div>
+            <div class="h-64">
+                <canvas id="trendsChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js and Data Fetching -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+<script>
+    // Register the plugin
+    Chart.register(ChartDataLabels);
+
+    // Store chart instances
+    let charts = {
+        filesChart: null,
+        tagsChart: null,
+        trendsChart: null
+    };
+
+    // Define color palette for consistency
+    const colorPalette = {
+        blue: 'rgb(59, 130, 246)',
+        red: 'rgb(239, 68, 68)',
+        green: 'rgb(16, 185, 129)',
+        purple: 'rgb(139, 92, 246)',
+        amber: 'rgb(245, 158, 11)',
+        orange: 'rgb(249, 115, 22)',
+        teal: 'rgb(20, 184, 166)',
+        cyan: 'rgb(6, 182, 212)',
+        pink: 'rgb(236, 72, 153)',
+        indigo: 'rgb(99, 102, 241)'
+    };
+
+    // Function to destroy existing chart if it exists
+    function destroyChart(chartId) {
+        if (charts[chartId]) {
+            charts[chartId].destroy();
+            charts[chartId] = null;
+        }
+    }
+
+    // Function to create or update chart
+    function createOrUpdateChart(chartId, config) {
+        const canvas = document.getElementById(chartId);
+        if (!canvas) {
+            console.error(`Canvas ${chartId} not found`);
+            return;
+        }
+
+        destroyChart(chartId);
+        const ctx = canvas.getContext('2d');
+        charts[chartId] = new Chart(ctx, config);
+    }
+
+    // Main function to load all dashboard data
+    function loadDashboardData() {
+        try {
+            const period = document.getElementById('periodSelector')?.value || 'month';
+
+            // Show loading state for all sections
+            ['new_files_list', 'top_universities_list', 'top_prodies_list', 'filesChart', 'tagsChart', 'trendsChart'].forEach(elementId => {
+                showLoadingState(elementId);
+            });
+
+            // Load all data with the same period
+            Promise.all([
+                // Dashboard data
+                fetch(`{{ url_for('analytics') }}?period=${period}`)
+                    .then(response => {
+                        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                        return response.json();
+                    }),
+                // Trend data
+                fetch(`{{ url_for('trend_data') }}?period=${period}`)
+                    .then(response => {
+                        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                        return response.json();
+                    })
+            ])
+                .then(([analyticsData, trendData]) => {
+                    // Update all sections with the data
+                    updateDashboardStats(analyticsData);
+                    updateTypeAndTagCharts(analyticsData);
+                    updateTrendChart(trendData);
+
+                    // Remove all loading states
+                    ['new_files_list', 'top_universities_list', 'top_prodies_list', 'filesChart', 'tagsChart', 'trendsChart'].forEach(elementId => {
+                        removeLoadingState(elementId);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error fetching dashboard data:", error);
+                    handleDataError();
+                });
+
+        } catch (error) {
+            console.error("Error in loadDashboardData:", error);
+            handleDataError();
+        }
+    }
+
+    function showLoadingState(elementId) {
+        const element = document.getElementById(elementId);
+        if (!element) {
+            console.warn(`Element with id ${elementId} not found`);
+            return;
+        }
+
+        // Remove any existing loading indicators first
+        removeLoadingState(elementId);
+
+        if (element.tagName.toLowerCase() === 'canvas') {
+            const container = element.parentElement;
+            if (!container) {
+                console.warn(`Parent container for ${elementId} not found`);
+                return;
+            }
+
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'loading-indicator absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 dark:bg-gray-800 dark:bg-opacity-75';
+            loadingDiv.innerHTML = `
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+            `;
+
+            // Ensure container has relative positioning
+            if (getComputedStyle(container).position === 'static') {
+                container.style.position = 'relative';
+            }
+
+            container.appendChild(loadingDiv);
+        } else {
+            element.innerHTML = `
+                <li class="p-2 bg-gray-50 dark:bg-gray-700 rounded flex items-center justify-center">
+                    <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-600"></div>
+                    <span class="ml-2">Loading...</span>
+                </li>
+            `;
+        }
+    }
+
+    function removeLoadingState(elementId) {
+        const element = document.getElementById(elementId);
+        if (!element) {
+            console.warn(`Element with id ${elementId} not found`);
+            return;
+        }
+
+        if (element.tagName.toLowerCase() === 'canvas') {
+            const container = element.parentElement;
+            if (!container) {
+                console.warn(`Parent container for ${elementId} not found`);
+                return;
+            }
+
+            const loadingIndicator = container.querySelector('.loading-indicator');
+            if (loadingIndicator) {
+                loadingIndicator.remove();
+            }
+        } else {
+            const loadingIndicator = element.querySelector('.loading-indicator');
+            if (loadingIndicator) {
+                loadingIndicator.remove();
+            }
+        }
+    }
+
+    function updateTypeAndTagCharts(data) {
+        if (!data) return;
+
+        // Update files by type chart
+        const typeConfig = {
+            type: 'pie',
+            data: {
+                labels: Object.keys(data.files_by_type || {}),
+                datasets: [{
+                    data: Object.values(data.files_by_type || {}),
+                    backgroundColor: Object.keys(data.files_by_type || {}).map((_, i) => {
+                        const colors = Object.values(colorPalette);
+                        return colors[i % colors.length];
+                    })
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: document.documentElement.classList.contains('dark') ? '#fff' : '#000'
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'File Distribution by Type',
+                        color: document.documentElement.classList.contains('dark') ? '#fff' : '#000'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                const value = context.raw;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return `${context.label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    },
+                    datalabels: {
+                        display: true,
+                        color: '#fff',
+                        font: {
+                            weight: 'bold',
+                            size: 11
+                        },
+                        formatter: function (value, context) {
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            return `${value}\n(${percentage}%)`;
+                        }
+                    }
+                }
+            }
+        };
+        createOrUpdateChart('filesChart', typeConfig);
+
+        // Update files by tag chart
+        const tagConfig = {
+            type: 'bar',
+            data: {
+                labels: Object.keys(data.files_by_tag || {}),
+                datasets: [{
+                    label: 'Files',
+                    data: Object.values(data.files_by_tag || {}),
+                    backgroundColor: Object.keys(data.files_by_tag || {}).map((_, i) => {
+                        const colors = Object.values(colorPalette);
+                        return colors[i % colors.length];
+                    })
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'File Distribution by Category',
+                        color: document.documentElement.classList.contains('dark') ? '#fff' : '#000'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                const value = context.raw;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return `Files: ${value} (${percentage}%)`;
+                            }
+                        }
+                    },
+                    datalabels: {
+                        display: true,
+                        anchor: 'end',
+                        align: 'top',
+                        color: document.documentElement.classList.contains('dark') ? '#fff' : '#000',
+                        font: {
+                            weight: 'bold',
+                            size: 11
+                        },
+                        formatter: function (value, context) {
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            return `${value}\n(${percentage}%)`;
+                        },
+                        offset: 4
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: document.documentElement.classList.contains('dark') ? '#fff' : '#000'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: document.documentElement.classList.contains('dark') ? '#fff' : '#000',
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    }
+                }
+            }
+        };
+        createOrUpdateChart('tagsChart', tagConfig);
+    }
+
+    function updateTrendChart(data) {
+        if (!data || !data.labels || !data.uploads) {
+            handleDataError("trends");
+            return;
+        }
+
+        const config = {
+            type: 'line',
+            data: {
+                labels: data.labels.map(label => formatMonthLabel(label)),
+                datasets: [
+                    {
+                        label: 'Uploads',
+                        data: data.uploads,
+                        borderColor: colorPalette.blue,
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Downloads',
+                        data: data.downloads,
+                        borderColor: colorPalette.green,
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: document.documentElement.classList.contains('dark') ? '#fff' : '#000'
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Upload & Download Trends',
+                        color: document.documentElement.classList.contains('dark') ? '#fff' : '#000'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                const label = context.dataset.label || '';
+                                const value = context.raw || 0;
+                                return `${label}: ${value}`;
+                            }
+                        }
+                    },
+                    datalabels: {
+                        display: true,
+                        color: function (context) {
+                            return context.dataset.borderColor;
+                        },
+                        font: {
+                            weight: 'bold',
+                            size: 11
+                        },
+                        formatter: function (value) {
+                            return value;
+                        },
+                        align: 'top',
+                        offset: 4
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            color: document.documentElement.classList.contains('dark') ? '#fff' : '#000',
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            borderDash: [2, 4],
+                            color: document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+                        },
+                        ticks: {
+                            color: document.documentElement.classList.contains('dark') ? '#fff' : '#000'
+                        }
+                    }
+                }
+            }
+        };
+        createOrUpdateChart('trendsChart', config);
+    }
+
+    // Function to handle data errors
+    function handleDataError(section) {
+        const errorMessages = {
+            dashboard: "Error loading dashboard data",
+            statistics: "Error loading statistics data",
+            trends: "Error loading trend data",
+            timeout: "Loading timeout reached"
+        };
+
+        const message = errorMessages[section] || "Error loading data";
+        console.error(message);
+
+        switch (section) {
+            case 'dashboard':
+                removeLoadingState('new_files_list');
+                removeLoadingState('top_universities_list');
+                removeLoadingState('top_prodies_list');
+                showErrorMessage('new_files_list', message);
+                showErrorMessage('top_universities_list', message);
+                showErrorMessage('top_prodies_list', message);
+                break;
+            case 'statistics':
+                removeLoadingState('filesChart');
+                removeLoadingState('tagsChart');
+                showErrorMessage('filesChart', message);
+                showErrorMessage('tagsChart', message);
+                break;
+            case 'trends':
+                removeLoadingState('trendsChart');
+                showErrorMessage('trendsChart', message);
+                break;
+            default:
+                // Handle general errors - clean up all loading states
+                ['new_files_list', 'top_universities_list', 'top_prodies_list', 'filesChart', 'tagsChart', 'trendsChart'].forEach(id => {
+                    removeLoadingState(id);
+                    showErrorMessage(id, message);
+                });
+        }
+    }
+
+    // Function to show error message
+    function showErrorMessage(elementId, message) {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+
+        // Remove any existing loading states first
+        removeLoadingState(elementId);
+
+        if (element.tagName.toLowerCase() === 'canvas') {
+            const container = element.parentElement;
+            if (container) {
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full">
+                        <svg class="h-12 w-12 text-red-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p class="text-red-600 dark:text-red-400 text-center">${message}</p>
+                        <button onclick="retryLoad()" class="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+                            Retry
+                        </button>
+                    </div>`;
+            }
+        } else {
+            element.innerHTML = `
+                <li class="p-2 bg-red-50 dark:bg-red-900 text-red-600 dark:text-red-200 rounded flex items-center justify-between">
+                    <div class="flex items-center">
+                        <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                        <span>${message}</span>
+                    </div>
+                    <button onclick="retryLoad()" class="text-sm bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">
+                        Retry
+                    </button>
+                </li>`;
+        }
+    }
+
+    // Function to format month labels
+    function formatMonthLabel(label) {
+        const months = {
+            '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr',
+            '05': 'May', '06': 'Jun', '07': 'Jul', '08': 'Aug',
+            '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec'
+        };
+
+        if (label.includes('-')) {
+            const [year, month] = label.split('-');
+            return `${months[month]} ${year}`;
+        }
+        return label;
+    }
+
+    // Function to retry loading data
+    function retryLoad() {
+        loadDashboardData();
+    }
+    // Function to format timestamps into "X waktu yang lalu"
+    function timeAgo(uploadDate) {
+        const now = new Date();
+        const uploadedTime = new Date(uploadDate);
+        const diffInSeconds = Math.floor((now - uploadedTime) / 1000);
+
+        if (diffInSeconds < 60) {
+            return `${diffInSeconds} detik yang lalu`;
+        }
+        const diffInMinutes = Math.floor(diffInSeconds / 60);
+        if (diffInMinutes < 60) {
+            return `${diffInMinutes} menit yang lalu`;
+        }
+        const diffInHours = Math.floor(diffInMinutes / 60);
+        if (diffInHours < 24) {
+            return `${diffInHours} jam yang lalu`;
+        }
+        const diffInDays = Math.floor(diffInHours / 24);
+        if (diffInDays < 7) {
+            return `${diffInDays} hari yang lalu`;
+        }
+        const diffInWeeks = Math.floor(diffInDays / 7);
+        if (diffInWeeks < 4) {
+            return `${diffInWeeks} minggu yang lalu`;
+        }
+        const diffInMonths = Math.floor(diffInDays / 30);
+        if (diffInMonths < 12) {
+            return `${diffInMonths} bulan yang lalu`;
+        }
+        const diffInYears = Math.floor(diffInDays / 365);
+        return `${diffInYears} tahun yang lalu`;
+    }
+    // Function to update dashboard stats
+    function updateDashboardStats(data) {
+        if (!data) return;
+
+        // Update new files list
+        const newFilesList = document.getElementById('new_files_list');
+        if (newFilesList && data.recent_uploads) {
+            newFilesList.innerHTML = data.recent_uploads.map(file => `
+                <li class="p-2 bg-gray-50 dark:bg-gray-700 rounded flex items-center justify-between">
+                    <div class="flex items-center">
+                        <svg class="h-5 w-5 mr-2 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span class="text-gray-700 dark:text-gray-300">${file.judul || 'Untitled'} <span class="text-gray-500 text-xs">by ${file.nama_penulis}</span></span>
+                    </div>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">${timeAgo(file.upload_date)}</span>
+                </li>
+            `).join('') || '<li class="p-2 text-gray-500 dark:text-gray-400">No recent uploads</li>';
+        }
+
+        // Update top downloads list
+        const topDownloadsList = document.getElementById('top_downloads_list');
+        if (topDownloadsList && data.top_files) {
+            topDownloadsList.innerHTML = data.top_files.map((file, index) => `
+                <li class="p-2 bg-gray-50 dark:bg-gray-700 rounded flex items-center justify-between">
+                    <div class="flex items-center">
+                        <span class="font-bold text-lg ${index < 3 ? 'text-yellow-500' : 'text-gray-500'} mr-3">#${index + 1}</span>
+                        <div>
+                            <span class="text-gray-700 dark:text-gray-300">${file.judul || 'Untitled'} <span class="text-gray-500 text-xs">by ${file.nama_penulis}</span></span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400 block">${file.download_count} downloads</span>
+                        </div>
+                    </div>
+                </li>
+            `).join('') || '<li class="p-2 text-gray-500 dark:text-gray-400">No downloads yet</li>';
+        }
+
+        // Load top universities
+        fetch('/top-uploaders/university')
+            .then(response => response.json())
+            .then(data => {
+                const topUniversitiesList = document.getElementById('top_universities_list');
+                if (topUniversitiesList) {
+                    topUniversitiesList.innerHTML = data.map((univ, index) => `
+                        <li class="p-2 bg-gray-50 dark:bg-gray-700 rounded flex items-center justify-between">
+                            <div class="flex items-center">
+                                <span class="font-bold text-lg ${index < 3 ? 'text-yellow-500' : 'text-gray-500'} mr-3">#${index + 1}</span>
+                                <div>
+                                    <span class="text-gray-700 dark:text-gray-300">${univ.university || 'Unknown University'}</span>
+                                    <span class="text-sm text-gray-500 dark:text-gray-400 block">${univ.upload_count} uploads</span>
+                                </div>
+                </div>
+                        </li>
+                    `).join('') || '<li class="p-2 text-gray-500 dark:text-gray-400">No data available</li>';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading top universities:', error);
+                if (document.getElementById('top_universities_list')) {
+                    document.getElementById('top_universities_list').innerHTML =
+                        '<li class="p-2 text-red-500">Error loading data</li>';
+                }
+            });
+
+        // Load top prodies
+        fetch('/top-uploaders/prodi')
+            .then(response => response.json())
+            .then(data => {
+                const topProdiesList = document.getElementById('top_prodies_list');
+                if (topProdiesList) {
+                    topProdiesList.innerHTML = data.map((prodi, index) => `
+                        <li class="p-2 bg-gray-50 dark:bg-gray-700 rounded flex items-center justify-between">
+                            <div class="flex items-center">
+                                <span class="font-bold text-lg ${index < 3 ? 'text-yellow-500' : 'text-gray-500'} mr-3">#${index + 1}</span>
+                                <div>
+                                    <span class="text-gray-700 dark:text-gray-300">${prodi.prodi || 'Unknown Program'}</span>
+                                    <span class="text-sm text-gray-500 dark:text-gray-400 block">${prodi.university || 'Unknown University'}</span>
+                                    <span class="text-sm text-gray-500 dark:text-gray-400 block">${prodi.upload_count} uploads</span>
+                                </div>
+                            </div>
+                        </li>
+                    `).join('') || '<li class="p-2 text-gray-500 dark:text-gray-400">No data available</li>';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading top prodies:', error);
+                if (document.getElementById('top_prodies_list')) {
+                    document.getElementById('top_prodies_list').innerHTML =
+                        '<li class="p-2 text-red-500">Error loading data</li>';
+                }
+            });
+    }
+
+    // Event listeners for period selector
+    document.addEventListener('DOMContentLoaded', function () {
+        loadDashboardData();
+
+        // Add event listener to period selector
+        const selector = document.getElementById('periodSelector');
+        if (selector) {
+            selector.addEventListener('change', loadDashboardData);
+        }
+
+        // Handle theme changes
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.attributeName === 'class' &&
+                    mutation.target.classList.contains('dark') !== window.isDarkMode) {
+                    window.isDarkMode = mutation.target.classList.contains('dark');
+                    loadDashboardData(); // Reload charts with updated colors
+                }
+            });
+        });
+        observer.observe(document.documentElement, { attributes: true });
+    });
+</script>
+{% endblock %}

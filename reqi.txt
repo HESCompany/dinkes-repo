@@ -1,0 +1,10 @@
+jumlah dilihat dan download di detail. ~
+hapus statistic server dan file di landing ~
+tambah nomor di table ~
+tambah filter statistic per Waktu ~
+tambah tag laporan pkl, skripsi ~
+tambah uploader terbanyak berdasarkan universitas dan prodi ~
+>embed ganti mozila pdf
+>filter prodi auto saran seperti universitas ~
+>hasil filter ubah ke post ~
+>rate limit ~

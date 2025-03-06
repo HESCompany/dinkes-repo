@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>PDF Viewer</title>
+    <style>
+        html, body { margin: 0; height: 100%; }
+    </style>
+</head>
+<body>
+    <!-- Loads PDF.js viewer from your static files and passes the PDF file URL as a query parameter -->
+    <iframe src="/static/web/viewer.html?file={{ pdf_url }}" style="width: 100%; height: 100%; border: none;"></iframe>
+
+</body>
+</html>
